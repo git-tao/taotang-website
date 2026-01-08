@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tao Tang — AI Systems Engineer</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23212529%22/><text y=%22.9em%22 x=%22.1em%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22%23FFBF00%22 font-family=%22Inter%22>TT</text></svg>">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --charcoal: #212529;
+            --off-white: #F8F9FA;
+            --amber: #FFBF00;
+            --deep-amber: #E6AC00;
+            --dark-amber: #CC9900;
+            --light-gray: #E9ECEF;
+            --mid-gray: #6C757D;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--off-white);
+            color: var(--charcoal);
+            margin: 0;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--charcoal);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+        }
+        p {
+            line-height: 1.7;
+            color: var(--charcoal);
+            max-width: 70ch;
+        }
+        .text-secondary {
+            color: var(--mid-gray);
+        }
+        .btn-primary {
+            background-color: var(--amber);
+            color: var(--charcoal);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background-color: var(--deep-amber);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(255, 191, 0, 0.25);
+        }
+        .btn-primary:active {
+            background-color: var(--dark-amber);
+            transform: translateY(0);
+        }
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #FFFFFF;
+            border: 1px solid var(--light-gray);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(255, 191, 0, 0.1);
+            border-color: var(--amber);
+        }
+        .section-padding {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--amber) !important;
+            box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.1) !important;
+            outline: none !important;
+        }
+        a {
+            color: var(--amber);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        a:hover {
+            color: var(--deep-amber);
+        }
+        @media (min-width: 768px) {
+            .section-padding {
+                padding-top: 140px;
+                padding-bottom: 140px;
+            }
+        }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "react/jsx-runtime": "https://esm.sh/react@19.0.0/jsx-runtime",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
+  }
+}
+</script>
+</head>
+<body class="selection:bg-amber-100">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
