@@ -7,7 +7,7 @@ import AboutSnippet from './components/sections/AboutSnippet';
 import CaseStudies from './components/sections/CaseStudies';
 import Process from './components/sections/Process';
 import FinalCTA from './components/sections/FinalCTA';
-import IntakeForm from './components/intake/IntakeForm';
+import { IntakeWizard } from './components/intake';
 
 const App: React.FC = () => {
   return (
@@ -19,7 +19,7 @@ const App: React.FC = () => {
         <AboutSnippet />
         <CaseStudies />
         <Process />
-        <IntakeForm />
+        <IntakeWizard />
         <FinalCTA />
       </main>
       <Footer />

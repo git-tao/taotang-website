@@ -1,7 +1,7 @@
 """Pydantic schemas for intake form submission and responses."""
 
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
@@ -44,6 +44,13 @@ class RoleTitle(str, Enum):
     OTHER = "other"
 
 
+class ProjectSubtype(str, Enum):
+    """Subtype for 'Build or ship something' projects."""
+    PROTOTYPE_TO_PRODUCTION = "prototype_to_production"
+    RAG_RELIABILITY_SPRINT = "rag_reliability_sprint"
+    OTHER_BUILD = "other_build"
+
+
 class GateStatus(str, Enum):
     PASS = "pass"
     MANUAL = "manual"
@@ -64,18 +71,43 @@ class RoutingResult(str, Enum):
     MANUAL = "manual"
 
 
+# Extended answers for conditional follow-ups
+class AnswersRaw(BaseModel):
+    """Extended answers from conditional form fields."""
+
+    # Basic info extensions
+    company_name: Optional[str] = None
+    is_decision_maker: Optional[bool] = None  # For IC/Other roles
+
+    # Conditional follow-ups based on service_type
+    audit_symptoms: Optional[str] = None  # If service_type = audit
+    project_subtype: Optional[str] = None  # If service_type = project
+    project_state: Optional[str] = None  # If project_subtype = prototype_to_production
+    rag_issues: Optional[str] = None  # If project_subtype = rag_reliability_sprint
+    advisory_questions: Optional[str] = None  # If service_type = advisory_paid
+    desired_outcome: Optional[str] = None  # If service_type = unclear
+
+
 # Request schemas
 class IntakeFormRequest(BaseModel):
     """Intake form submission from frontend."""
 
+    # Step 1: Basic Info
     name: str = Field(..., min_length=1, max_length=200)
     email: EmailStr
     role_title: RoleTitle
+
+    # Step 2: Project Details
     service_type: ServiceType
+    context_raw: str = Field(..., min_length=1, max_length=10000)
+
+    # Step 3: Qualification
     access_model: AccessModel
     timeline: Timeline
     budget_range: BudgetRange
-    context_raw: str = Field(..., min_length=1, max_length=10000)
+
+    # Extended answers (conditional fields)
+    answers_raw: Optional[AnswersRaw] = None
 
     # Optional tracking fields
     entry_point: Optional[str] = None

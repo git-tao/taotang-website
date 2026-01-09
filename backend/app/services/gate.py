@@ -25,10 +25,17 @@ BUDGET_ORDER = {
     BudgetRange.UNSURE: 0,  # Treat unsure as low signal
 }
 
-# Qualified access models (others are flagged)
+# Qualified access models (others trigger manual review)
 QUALIFIED_ACCESS_MODELS = {
     AccessModel.REMOTE_ACCESS,
     AccessModel.OWN_ENVIRONMENT_OWN_TOOLS,
+}
+
+# Access models that trigger manual review
+MANUAL_REVIEW_ACCESS_MODELS = {
+    AccessModel.MANAGED_DEVICES,
+    AccessModel.ONPREMISE_ONLY,
+    AccessModel.UNSURE,
 }
 
 # Senior roles that pass the seniority gate
@@ -42,6 +49,12 @@ SENIOR_ROLES = {
 URGENT_TIMELINES = {
     Timeline.URGENT,
     Timeline.SOON,
+}
+
+# Budget threshold for qualifying ($25k+)
+QUALIFYING_BUDGETS = {
+    BudgetRange.TWENTY_FIVE_TO_50K,
+    BudgetRange.OVER_50K,
 }
 
 
@@ -62,9 +75,20 @@ def is_qualified_access(access_model: AccessModel) -> bool:
     return access_model in QUALIFIED_ACCESS_MODELS
 
 
-def is_senior_role(role_title: RoleTitle) -> bool:
-    """Check if role indicates seniority."""
-    return role_title in SENIOR_ROLES
+def is_senior_role(role_title: RoleTitle, is_decision_maker: bool | None = None) -> bool:
+    """Check if role indicates seniority.
+
+    IC/Other roles can qualify as senior if they are the budget owner/project sponsor.
+    """
+    # Standard senior roles
+    if role_title in SENIOR_ROLES:
+        return True
+
+    # IC/Other with decision-maker authority = treat as senior
+    if role_title in {RoleTitle.IC_ENGINEER, RoleTitle.OTHER}:
+        return is_decision_maker is True
+
+    return False
 
 
 def is_urgent_timeline(timeline: Timeline) -> bool:
@@ -90,11 +114,17 @@ def evaluate_gate(form: IntakeFormRequest) -> GateEvaluationResult:
 
     Gate Criteria (all required for pass):
     - Business email (non-personal domain)
-    - Access model = qualified
+    - Access model = qualified (not managed_devices, onpremise_only, unsure)
     - Timeline = urgent or soon
-    - Budget range meets minimum threshold
-    - Role/title indicates seniority
+    - Budget range >= $25k (25k_50k or over_50k)
+    - Role/title indicates seniority (or IC/Other with decision-maker authority)
     - Context length >= 100 characters
+
+    Special cases:
+    - Paid advisory service bypasses gate entirely
+    - IC/Other with strong signals → manual review (not fail)
+    - "Not sure" budget with strong signals → manual review
+    - Access flagged → manual review
 
     Args:
         form: The intake form submission
@@ -105,13 +135,18 @@ def evaluate_gate(form: IntakeFormRequest) -> GateEvaluationResult:
     settings = get_settings()
     flags: list[str] = []
 
+    # Extract is_decision_maker from answers_raw
+    is_decision_maker = None
+    if form.answers_raw:
+        is_decision_maker = form.answers_raw.is_decision_maker
+
     # Evaluate each criterion
     criteria = {
         "business_email": f"Email domain is business (not {settings.personal_email_domains[:3]}...)",
         "qualified_access": f"Access model in {[a.value for a in QUALIFIED_ACCESS_MODELS]}",
         "urgent_timeline": f"Timeline in {[t.value for t in URGENT_TIMELINES]}",
         "budget_threshold": f"Budget >= {settings.gate_min_budget_threshold}",
-        "senior_role": f"Role in {[r.value for r in SENIOR_ROLES]}",
+        "senior_role": f"Role in {[r.value for r in SENIOR_ROLES]} or IC/Other with decision-maker authority",
         "context_length": f"Context length >= {settings.gate_min_context_length} chars",
     }
 
@@ -120,7 +155,7 @@ def evaluate_gate(form: IntakeFormRequest) -> GateEvaluationResult:
         "qualified_access": is_qualified_access(form.access_model),
         "urgent_timeline": is_urgent_timeline(form.timeline),
         "budget_threshold": meets_budget_threshold(form.budget_range),
-        "senior_role": is_senior_role(form.role_title),
+        "senior_role": is_senior_role(form.role_title, is_decision_maker),
         "context_length": has_sufficient_context(form.context_raw),
     }
 
@@ -141,29 +176,19 @@ def evaluate_gate(form: IntakeFormRequest) -> GateEvaluationResult:
         flags.append("very_short_context")
     if form.timeline == Timeline.EXPLORING:
         flags.append("just_exploring")
+    if form.access_model in MANUAL_REVIEW_ACCESS_MODELS:
+        flags.append("access_requires_review")
 
     # Determine qualification
-    if not results["qualified_access"]:
-        # Access flagged = always flagged qualification
+    if form.access_model in MANUAL_REVIEW_ACCESS_MODELS:
         qualification = Qualification.FLAGGED
     elif flags:
         qualification = Qualification.LOW_QUALITY if "very_short_context" in flags else Qualification.FLAGGED
     else:
         qualification = Qualification.QUALIFIED
 
-    # Determine gate status
-    if not results["qualified_access"]:
-        # Access flagged = manual review required
-        gate_status = GateStatus.MANUAL
-    elif all(results.values()):
-        # All criteria passed
-        gate_status = GateStatus.PASS
-    elif sum(results.values()) >= 4:
-        # Most criteria passed, manual review
-        gate_status = GateStatus.MANUAL
-    else:
-        # Below threshold
-        gate_status = GateStatus.FAIL
+    # Determine gate status with new logic
+    gate_status = _determine_gate_status(form, results, is_decision_maker)
 
     # Determine routing based on service type and gate status
     routing_result = determine_routing(form.service_type, gate_status, results["qualified_access"])
@@ -175,6 +200,58 @@ def evaluate_gate(form: IntakeFormRequest) -> GateEvaluationResult:
         routing_result=routing_result,
         flags=flags,
     )
+
+
+def _determine_gate_status(
+    form: IntakeFormRequest,
+    results: dict[str, bool],
+    is_decision_maker: bool | None,
+) -> GateStatus:
+    """Determine gate status based on criteria results and special cases.
+
+    Logic:
+    1. Access flagged (managed_devices, onpremise_only, unsure) → manual review
+    2. All criteria pass → pass
+    3. IC/Other (non-decision-maker) with strong signals → manual review
+    4. "Not sure" budget with strong signals → manual review
+    5. Otherwise → fail
+    """
+    # Access flagged = manual review required
+    if form.access_model in MANUAL_REVIEW_ACCESS_MODELS:
+        return GateStatus.MANUAL
+
+    # All criteria passed = gate pass
+    if all(results.values()):
+        return GateStatus.PASS
+
+    # Special case: IC/Other non-decision-maker with strong signals → manual review
+    if form.role_title in {RoleTitle.IC_ENGINEER, RoleTitle.OTHER}:
+        if is_decision_maker is not True:  # Not a decision maker
+            # Check if all OTHER signals are strong
+            has_qualifying_budget = form.budget_range in QUALIFYING_BUDGETS
+            has_urgent_timeline = form.timeline in URGENT_TIMELINES
+            has_qualified_access = form.access_model in QUALIFIED_ACCESS_MODELS
+            has_sufficient_context = results["context_length"]
+            has_business_email = results["business_email"]
+
+            if (has_qualifying_budget and has_urgent_timeline and
+                has_qualified_access and has_sufficient_context and has_business_email):
+                return GateStatus.MANUAL
+
+    # Special case: "Not sure" budget with strong signals → manual review
+    if form.budget_range == BudgetRange.UNSURE:
+        has_senior_role = results["senior_role"]
+        has_urgent_timeline = form.timeline in URGENT_TIMELINES
+        has_qualified_access = form.access_model in QUALIFIED_ACCESS_MODELS
+        has_sufficient_context = results["context_length"]
+        has_business_email = results["business_email"]
+
+        if (has_senior_role and has_urgent_timeline and
+            has_qualified_access and has_sufficient_context and has_business_email):
+            return GateStatus.MANUAL
+
+    # Default: fail
+    return GateStatus.FAIL
 
 
 def determine_routing(

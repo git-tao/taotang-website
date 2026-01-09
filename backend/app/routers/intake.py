@@ -75,6 +75,12 @@ async def submit_intake(
     # Extract email domain
     email_domain = extract_email_domain(form.email)
 
+    # Build answers_raw with all form data including extensions
+    answers_raw_data = form.model_dump(mode="json")
+    if form.answers_raw:
+        # Merge extended answers into answers_raw for complete storage
+        answers_raw_data["extended"] = form.answers_raw.model_dump(mode="json")
+
     # Build inquiry record
     inquiry_data = {
         # Identity
@@ -108,7 +114,7 @@ async def submit_intake(
         # Versioning
         "form_version": settings.form_version,
         "rules_version": settings.rules_version,
-        "answers_raw": form.model_dump(mode="json"),
+        "answers_raw": answers_raw_data,
         "answers_version": settings.answers_version,
     }
 
