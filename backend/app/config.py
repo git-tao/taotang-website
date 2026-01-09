@@ -17,7 +17,13 @@ class Settings(BaseSettings):
 
     # App settings
     debug: bool = False
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://taotang-website.vercel.app",
+        "https://taotang.io",
+        "https://www.taotang.io",
+    ]
 
     # Gate configuration (can be tuned without code changes)
     gate_min_context_length: int = 100

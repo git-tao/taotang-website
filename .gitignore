@@ -38,3 +38,4 @@ backend/venv/
 *.njsproj
 *.sln
 *.sw?
+.workflow/
