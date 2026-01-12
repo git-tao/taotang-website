@@ -6,7 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   // Directory containing test files
-  testDir: './tests/e2e',
+  testDir: './tests',
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -66,13 +66,22 @@ export default defineConfig({
     },
   ],
 
-  // Web server configuration - starts the dev server before running tests
+  // Web server configuration - starts both frontend and backend before running tests
   webServer: [
     {
-      command: 'npm run dev',
+      // Use --mode test to load .env.test.local which points to local backend
+      command: 'npx vite --mode test --port 3000',
       url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: false,
       timeout: 120 * 1000,
+      stdout: 'pipe',
+    },
+    {
+      command: 'cd backend && ./venv/bin/python -m uvicorn app.main:app --port 8000',
+      url: 'http://localhost:8000/api/health',
+      reuseExistingServer: false,
+      timeout: 120 * 1000,
+      stdout: 'pipe',
     },
   ],
 

@@ -16,6 +16,7 @@ from app.services.gate import (
     get_routing_message,
 )
 from app.services.supabase import get_supabase_service
+from app.services.ai_assistant import get_ai_assistant
 
 router = APIRouter(prefix="/api", tags=["intake"])
 
@@ -134,7 +135,28 @@ async def submit_intake(
             reason="Form submission",
         )
 
-        # Get user-facing message
+        # AI Analysis: Check for clarification triggers
+        ai_service = get_ai_assistant()
+        ai_result = await ai_service.analyze_submission(
+            form=form,
+            inquiry_id=inquiry["id"],
+            gate_result=evaluation,
+        )
+
+        # If AI clarification is needed, return modified response
+        if ai_result.needs_clarification:
+            return IntakeResponse(
+                inquiry_id=inquiry["id"],
+                gate_status=evaluation.gate_status,
+                routing_result=evaluation.routing_result,
+                message="A few quick questions to help us understand your needs better.",
+                needs_clarification=True,
+                ai_session_id=ai_result.session_id,
+                provisional_gate_status=evaluation.gate_status,
+                first_question=ai_result.first_question.model_dump() if ai_result.first_question else None,
+            )
+
+        # No clarification needed - return normal response
         message = get_routing_message(evaluation.routing_result)
 
         return IntakeResponse(

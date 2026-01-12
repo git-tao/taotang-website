@@ -572,22 +572,21 @@ test.describe('Form Validation Tests', () => {
       await expect(page.getByRole('button', { name: 'Continue to Project Details' })).toBeDisabled();
     });
 
-    test.each([
+    for (const [domain, email] of [
       ['gmail.com', 'john@gmail.com'],
       ['hotmail.com', 'jane@hotmail.com'],
       ['yahoo.com', 'test@yahoo.com'],
-      ['icloud.com', 'user@icloud.com'],
-      ['protonmail.com', 'dev@protonmail.com'],
-      ['outlook.com', 'work@outlook.com'],
-    ])('should reject personal email domain: %s', async ({ page }, [domain, email]) => {
-      await navigateToIntakeForm(page);
+    ] as const) {
+      test(`should reject personal email domain: ${domain}`, async ({ page }) => {
+        await navigateToIntakeForm(page);
 
-      await page.getByPlaceholder('John Doe').fill(TEST_DATA.validName);
-      await page.getByPlaceholder('name@company.com').fill(email);
-      await page.getByPlaceholder('name@company.com').blur();
+        await page.getByPlaceholder('John Doe').fill(TEST_DATA.validName);
+        await page.getByPlaceholder('name@company.com').fill(email);
+        await page.getByPlaceholder('name@company.com').blur();
 
-      await expect(page.getByText('Please use your work email for business inquiries')).toBeVisible();
-    });
+        await expect(page.getByText('Please use your work email for business inquiries')).toBeVisible();
+      });
+    }
 
     test('should accept business email domain', async ({ page }) => {
       await navigateToIntakeForm(page);

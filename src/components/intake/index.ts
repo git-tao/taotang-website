@@ -14,3 +14,8 @@ export { default as BasicInfoStep } from './components/BasicInfoStep';
 export { default as ProjectDetailsStep } from './components/ProjectDetailsStep';
 export { default as QualificationStep } from './components/QualificationStep';
 export { default as OutcomeScreen } from './components/OutcomeScreen';
+
+// AI Clarification components
+export { default as ClarificationFlow } from './components/ClarificationFlow';
+export { default as QuestionCard } from './components/QuestionCard';
+export { default as ProgressDots } from './components/ProgressDots';

@@ -47,6 +47,12 @@ class Settings(BaseSettings):
         "zoho.com",
     ]
 
+    # AI Assistant (Gemini)
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-3-flash-preview"  # Latest Gemini 3 Flash model
+    ai_max_questions: int = 3
+    ai_session_ttl_minutes: int = 30
+
     class Config:
         env_file = "../.env.local"  # Relative to backend/
         env_file_encoding = "utf-8"

@@ -62,12 +62,59 @@ export const initialFormData: FormData = {
   access_model: '',
 };
 
-// API response type
+// ============================================================================
+// AI Clarification Types
+// ============================================================================
+
+export type AISessionStatus = 'active' | 'resolved' | 'manual' | 'expired' | 'error';
+export type AITriggerReason = 'ambiguity' | 'contradiction' | 'budget_scope_mismatch' | 'intelligence';
+export type AIQuestionType = 'single_choice' | 'text' | 'confirmation';
+
+export interface QuestionOption {
+  value: string;
+  label: string;
+  description?: string;
+  maps_to_field?: string;
+  maps_to_value?: string | null;
+}
+
+export interface AIQuestion {
+  question_text: string;
+  question_type: AIQuestionType;
+  question_purpose?: string;
+  options?: QuestionOption[];
+  target_field?: string;
+}
+
+export interface AITurnResponse {
+  session_id: string;
+  turn_index: number;
+  session_status: AISessionStatus;
+  next_question?: AIQuestion;
+  gate_status?: GateStatus;
+  routing_result?: RoutingResult;
+  message?: string;
+  questions_remaining: number;
+  field_updated?: string;
+  field_old_value?: unknown;
+  field_new_value?: unknown;
+}
+
+// ============================================================================
+// API Response Types
+// ============================================================================
+
+// API response type (extended with AI clarification fields)
 export interface IntakeResponse {
   inquiry_id: string;
   gate_status: GateStatus;
   routing_result: RoutingResult;
   message: string;
+  // AI Clarification fields
+  needs_clarification?: boolean;
+  ai_session_id?: string;
+  provisional_gate_status?: GateStatus;
+  first_question?: AIQuestion;
 }
 
 // Gate evaluation result (client-side preview)

@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import intake, stripe_webhooks
+from app.routers import ai_clarify, intake, stripe_webhooks
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     app.include_router(intake.router)
+    app.include_router(ai_clarify.router)
     app.include_router(stripe_webhooks.router)
 
     return app

@@ -158,6 +158,12 @@ class IntakeResponse(BaseModel):
     routing_result: RoutingResult
     message: str
 
+    # AI Clarification fields (only present when needs_clarification=True)
+    needs_clarification: bool = False
+    ai_session_id: Optional[str] = None
+    provisional_gate_status: Optional[GateStatus] = None  # Gate status before clarification
+    first_question: Optional[Any] = None  # AIQuestion object (typed as Any to avoid circular import)
+
 
 class ErrorResponse(BaseModel):
     """Error response."""
