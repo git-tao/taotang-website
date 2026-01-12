@@ -172,7 +172,11 @@ const IntakeWizard: React.FC = () => {
   if (wizardState === 'success' && result) {
     return (
       <section id="initiate" className="section-padding px-6 bg-[#F8F9FA]">
-        <OutcomeScreen result={result} onReset={handleReset} />
+        <OutcomeScreen
+          result={result}
+          onReset={handleReset}
+          userData={{ name: formData.name, email: formData.email }}
+        />
       </section>
     );
   }

@@ -1,9 +1,15 @@
 import React, { useEffect } from 'react';
 import { IntakeResponse } from '../types';
 
+interface UserData {
+  name: string;
+  email: string;
+}
+
 interface OutcomeScreenProps {
   result: IntakeResponse;
   onReset: () => void;
+  userData?: UserData;
 }
 
 // Calendly URLs - update with actual URLs
@@ -11,7 +17,7 @@ const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30min
 // For paid advisory, use Calendly with Stripe payment required (or separate booking page)
 const CALENDLY_PAID_ADVISORY = 'https://calendly.com/hello-compliantphotos/paid-advisory';
 
-const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset }) => {
+const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData }) => {
   // Load Calendly widget script for free strategy call
   useEffect(() => {
     if (result.routing_result === 'calendly_strategy_free') {
@@ -29,9 +35,9 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset }) => {
   const renderOutcome = () => {
     switch (result.routing_result) {
       case 'calendly_strategy_free':
-        return <FreeStrategyCallOutcome />;
+        return <FreeStrategyCallOutcome userData={userData} />;
       case 'paid_advisory':
-        return <PaidAdvisoryOutcome />;
+        return <PaidAdvisoryOutcome userData={userData} />;
       case 'manual':
         return <ManualReviewOutcome />;
       default:
@@ -58,7 +64,16 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset }) => {
 /**
  * Outcome: Gate PASS - Free Strategy Call
  */
-const FreeStrategyCallOutcome: React.FC = () => {
+const FreeStrategyCallOutcome: React.FC<{ userData?: UserData }> = ({ userData }) => {
+  // Build Calendly URL with prefilled user data
+  const buildCalendlyUrl = () => {
+    const baseUrl = `${CALENDLY_FREE_STRATEGY}?hide_gdpr_banner=1&primary_color=FFBF00`;
+    if (userData?.name && userData?.email) {
+      return `${baseUrl}&name=${encodeURIComponent(userData.name)}&email=${encodeURIComponent(userData.email)}`;
+    }
+    return baseUrl;
+  };
+
   return (
     <div className="text-center">
       {/* Success Icon */}
@@ -93,10 +108,10 @@ const FreeStrategyCallOutcome: React.FC = () => {
         Please use the calendar below to schedule a time that works for you.
       </p>
 
-      {/* Calendly Embed */}
+      {/* Calendly Embed - with prefilled name and email */}
       <div
         className="calendly-inline-widget rounded-xl overflow-hidden shadow-lg border border-[#E9ECEF]"
-        data-url={`${CALENDLY_FREE_STRATEGY}?hide_gdpr_banner=1&primary_color=FFBF00`}
+        data-url={buildCalendlyUrl()}
         style={{ minWidth: '320px', height: '630px' }}
       />
     </div>
@@ -106,7 +121,16 @@ const FreeStrategyCallOutcome: React.FC = () => {
 /**
  * Outcome: Gate FAIL - Paid Advisory Session
  */
-const PaidAdvisoryOutcome: React.FC = () => {
+const PaidAdvisoryOutcome: React.FC<{ userData?: UserData }> = ({ userData }) => {
+  // Build Calendly URL with prefilled user data
+  const buildCalendlyUrl = () => {
+    const baseUrl = `${CALENDLY_PAID_ADVISORY}?hide_gdpr_banner=1&primary_color=FFBF00`;
+    if (userData?.name && userData?.email) {
+      return `${baseUrl}&name=${encodeURIComponent(userData.name)}&email=${encodeURIComponent(userData.email)}`;
+    }
+    return baseUrl;
+  };
+
   return (
     <div className="text-center">
       {/* Amber Icon */}
@@ -194,7 +218,7 @@ const PaidAdvisoryOutcome: React.FC = () => {
         </ul>
 
         <a
-          href={CALENDLY_PAID_ADVISORY}
+          href={buildCalendlyUrl()}
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all text-center shadow-lg shadow-amber-200/40"
