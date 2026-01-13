@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hands-on AI systems engineering for production applications.">
     <title>Tao Tang — AI Systems Engineer</title>
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23212529%22/><text y=%22.9em%22 x=%22.1em%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22%23FFBF00%22 font-family=%22Inter%22>TT</text></svg>">
@@ -20,7 +21,25 @@
             --dark-amber: #CC9900;
             --light-gray: #E9ECEF;
             --mid-gray: #6C757D;
+
+            /* 8-Point Grid Spacing System */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 16px;
+            --space-4: 24px;
+            --space-5: 32px;
+            --space-6: 48px;
+            --space-7: 64px;
+            --space-8: 80px;
+            --space-9: 96px;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.12);
+            --shadow-amber: 0 8px 24px rgba(255, 191, 0, 0.15);
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--off-white);
@@ -28,67 +47,195 @@
             margin: 0;
             scroll-behavior: smooth;
         }
+
         h1, h2, h3, h4, h5, h6 {
             color: var(--charcoal);
             font-weight: 700;
             letter-spacing: -0.04em;
         }
+
         p {
             line-height: 1.7;
             color: var(--charcoal);
             max-width: 70ch;
         }
+
         .text-secondary {
             color: var(--mid-gray);
         }
+
+        /* ===========================================
+           SECTION PADDING - Using CSS Variables
+           =========================================== */
+        .section-padding {
+            padding-top: var(--space-8);  /* 80px */
+            padding-bottom: var(--space-8);
+        }
+
+        @media (min-width: 768px) {
+            .section-padding {
+                padding-top: var(--space-9);  /* 96px */
+                padding-bottom: var(--space-9);
+            }
+        }
+
+        /* ===========================================
+           INTERACTIVE ELEMENTS - CONSOLIDATED
+           =========================================== */
+
+        /* Card hover effect - single definition */
+        .card-hover {
+            background-color: #FFFFFF;
+            border: 1px solid var(--light-gray);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        border-color 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg), var(--shadow-amber);
+            border-color: var(--amber);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .card-hover:hover {
+                transform: none;
+            }
+        }
+
+        /* Primary button - single definition */
         .btn-primary {
             background-color: var(--amber);
             color: var(--charcoal);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
+            transition: background-color 0.2s ease,
+                        transform 0.2s ease,
+                        box-shadow 0.2s ease;
         }
+
         .btn-primary:hover {
             background-color: var(--deep-amber);
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(255, 191, 0, 0.25);
         }
+
         .btn-primary:active {
             background-color: var(--dark-amber);
             transform: translateY(0);
+            box-shadow: none;
         }
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background-color: #FFFFFF;
-            border: 1px solid var(--light-gray);
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn-primary:hover,
+            .btn-primary:active {
+                transform: none;
+            }
         }
-        .card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(255, 191, 0, 0.1);
-            border-color: var(--amber);
+
+        /* Credential badge */
+        .credential-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background-color: #F8F9FA;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #212529;
         }
-        .section-padding {
-            padding-top: 100px;
-            padding-bottom: 100px;
-        }
+
+        /* Form focus states */
         input:focus, select:focus, textarea:focus {
             border-color: var(--amber) !important;
-            box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.1) !important;
+            box-shadow: 0 0 0 3px rgba(255, 191, 0, 0.15) !important;
             outline: none !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
+
+        /* Links */
         a {
             color: var(--amber);
             text-decoration: none;
             transition: color 0.2s ease;
         }
+
         a:hover {
             color: var(--deep-amber);
         }
-        @media (min-width: 768px) {
-            .section-padding {
-                padding-top: 140px;
-                padding-bottom: 140px;
+
+        /* ===========================================
+           ANIMATION SYSTEM
+           - Visible by default (no-JS fallback)
+           - Animations only apply when JS adds .js-enabled to html
+           - Respects prefers-reduced-motion
+           =========================================== */
+
+        /* Default: Content is visible */
+        .animate-on-scroll {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* Only apply initial hidden state when JS is enabled */
+        html.js-enabled .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        /* Visible state when intersection observer triggers */
+        html.js-enabled .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Respect reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            html.js-enabled .animate-on-scroll {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+
+            .animate-hero,
+            .animate-hero-delay-1,
+            .animate-hero-delay-2,
+            .animate-hero-delay-3 {
+                animation: none;
+                opacity: 1;
             }
         }
+
+        /* Staggered animations for lists (supports up to 8 items) */
+        html.js-enabled .stagger-1 { transition-delay: 0ms; }
+        html.js-enabled .stagger-2 { transition-delay: 100ms; }
+        html.js-enabled .stagger-3 { transition-delay: 200ms; }
+        html.js-enabled .stagger-4 { transition-delay: 300ms; }
+        html.js-enabled .stagger-5 { transition-delay: 400ms; }
+        html.js-enabled .stagger-6 { transition-delay: 500ms; }
+        html.js-enabled .stagger-7 { transition-delay: 600ms; }
+        html.js-enabled .stagger-8 { transition-delay: 700ms; }
+
+        /* Hero entrance animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-hero {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .animate-hero-delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .animate-hero-delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .animate-hero-delay-3 { animation-delay: 0.3s; opacity: 0; }
     </style>
     <script type="importmap">
 {
@@ -102,6 +249,16 @@
   }
 }
 </script>
+    <!-- Enable animations before first paint to prevent flash -->
+    <script>
+      (function() {
+        var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var hasIntersectionObserver = 'IntersectionObserver' in window;
+        if (!prefersReducedMotion && hasIntersectionObserver) {
+          document.documentElement.classList.add('js-enabled');
+        }
+      })();
+    </script>
 </head>
 <body class="selection:bg-amber-100">
     <div id="root"></div>
