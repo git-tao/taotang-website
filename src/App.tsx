@@ -12,6 +12,8 @@ import { IntakeWizard } from './components/intake';
 import CaseStudyPage from './pages/CaseStudyPage';
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
+import IntakeModal from './components/IntakeModal';
+import { ModalProvider } from './context/ModalContext';
 import { useGlobalScrollAnimation } from './hooks/useGlobalScrollAnimation';
 
 // HomePage component wraps existing sections and preserves semantics
@@ -49,6 +51,35 @@ const HomePage: React.FC = () => {
         <FinalCTA />
       </main>
       <Footer />
+      <IntakeModal />
+    </div>
+  );
+};
+
+// Wrapper component that provides modal context to case study pages
+const CaseStudyPageWrapper: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main>
+        <CaseStudyPage />
+      </main>
+      <Footer />
+      <IntakeModal />
+    </div>
+  );
+};
+
+// Wrapper for NotFound page
+const NotFoundWrapper: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main>
+        <NotFound />
+      </main>
+      <Footer />
+      <IntakeModal />
     </div>
   );
 };
@@ -56,12 +87,14 @@ const HomePage: React.FC = () => {
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/case-study/:slug" element={<CaseStudyPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ModalProvider>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/case-study/:slug" element={<CaseStudyPageWrapper />} />
+          <Route path="*" element={<NotFoundWrapper />} />
+        </Routes>
+      </ModalProvider>
     </BrowserRouter>
   );
 };

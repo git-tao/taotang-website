@@ -8,7 +8,7 @@ export type ServiceType = 'advisory_paid' | 'audit' | 'project' | 'unclear';
 export type AccessModel = 'remote_access' | 'own_environment_own_tools' | 'managed_devices' | 'onpremise_only' | 'unsure';
 export type Timeline = 'urgent' | 'soon' | 'planning' | 'exploring';
 export type BudgetRange = 'under_10k' | '10k_25k' | '25k_50k' | 'over_50k' | 'unsure';
-export type RoleTitle = 'founder_csuite' | 'vp_director' | 'eng_manager' | 'ic_engineer' | 'other';
+export type RoleTitle = 'founder_csuite' | 'vp_director' | 'eng_manager' | 'business_ops_manager' | 'ic_engineer' | 'other';
 export type GateStatus = 'pass' | 'fail' | 'manual';
 export type RoutingResult = 'calendly_strategy_free' | 'paid_advisory' | 'manual';
 

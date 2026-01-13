@@ -12,7 +12,8 @@ const ROLE_OPTIONS: { value: RoleTitle; label: string }[] = [
   { value: 'founder_csuite', label: 'Founder / C-Suite' },
   { value: 'vp_director', label: 'VP / Director' },
   { value: 'eng_manager', label: 'Engineering Manager' },
-  { value: 'ic_engineer', label: 'IC Engineer' },
+  { value: 'business_ops_manager', label: 'Business / Ops Manager' },
+  { value: 'ic_engineer', label: 'Individual Contributor' },
   { value: 'other', label: 'Other' },
 ];
 
@@ -73,10 +74,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         </p>
       </div>
 
-      {/* Full Name */}
+      {/* Name */}
       <div className="space-y-2">
         <label className="text-[11px] font-bold uppercase tracking-widest text-[#6C757D]">
-          Full Name *
+          Name *
         </label>
         <input
           type="text"
@@ -86,14 +87,14 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           required
           autoFocus
           className="w-full px-4 py-3 border border-[#E9ECEF] rounded-lg focus:outline-none focus:border-[#FFBF00] focus:ring-1 focus:ring-amber-100 transition-all bg-white text-[#212529] text-sm"
-          placeholder="John Doe"
+          placeholder="Name"
         />
       </div>
 
-      {/* Work Email */}
+      {/* Email */}
       <div className="space-y-2">
         <label className="text-[11px] font-bold uppercase tracking-widest text-[#6C757D]">
-          Work Email *
+          Email *
         </label>
         <input
           type="email"
@@ -109,7 +110,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
               : 'border-[#E9ECEF] focus:border-[#FFBF00] focus:ring-1 focus:ring-amber-100'
             }
           `}
-          placeholder="name@company.com"
+          placeholder="Work email"
         />
         {emailError && (
           <p className="text-xs text-red-500 flex items-center gap-1">
@@ -129,10 +130,10 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         )}
       </div>
 
-      {/* Company Name (Optional) */}
+      {/* Company (Optional) */}
       <div className="space-y-2">
         <label className="text-[11px] font-bold uppercase tracking-widest text-[#6C757D]">
-          Company Name <span className="text-[#ADB5BD]">(optional)</span>
+          Company <span className="text-[#ADB5BD]">(optional)</span>
         </label>
         <input
           type="text"
@@ -140,7 +141,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           value={formData.company_name}
           onChange={handleInputChange}
           className="w-full px-4 py-3 border border-[#E9ECEF] rounded-lg focus:outline-none focus:border-[#FFBF00] focus:ring-1 focus:ring-amber-100 transition-all bg-white text-[#212529] text-sm"
-          placeholder="Acme Corp"
+          placeholder="Company"
         />
       </div>
 
