@@ -144,7 +144,16 @@ const PaidAdvisoryOutcome: React.FC<{ userData?: UserData; result: IntakeRespons
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to create checkout session');
+        // Handle both array (Pydantic) and string error details
+        let errorMessage = 'Failed to create checkout session';
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            errorMessage = errorData.detail[0]?.msg || errorMessage;
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const { checkout_url } = await response.json();

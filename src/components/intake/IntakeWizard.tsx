@@ -90,7 +90,17 @@ const IntakeWizard: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Request failed with status ${response.status}`);
+        // Handle Pydantic validation errors (detail is array) vs simple errors (detail is string)
+        let errorMessage = `Request failed with status ${response.status}`;
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            // Pydantic validation errors - extract first message
+            errorMessage = errorData.detail[0]?.msg || errorMessage;
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const data: IntakeResponse = await response.json();

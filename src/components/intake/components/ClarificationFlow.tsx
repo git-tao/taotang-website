@@ -68,7 +68,16 @@ const ClarificationFlow: React.FC<ClarificationFlowProps> = ({
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Failed to submit answer');
+        // Handle both array (Pydantic) and string error details
+        let errorMessage = 'Failed to submit answer';
+        if (errorData.detail) {
+          if (Array.isArray(errorData.detail)) {
+            errorMessage = errorData.detail[0]?.msg || errorMessage;
+          } else if (typeof errorData.detail === 'string') {
+            errorMessage = errorData.detail;
+          }
+        }
+        throw new Error(errorMessage);
       }
 
       const result: AITurnResponse = await response.json();
