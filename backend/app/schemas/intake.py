@@ -40,6 +40,7 @@ class RoleTitle(str, Enum):
     FOUNDER_CSUITE = "founder_csuite"
     VP_DIRECTOR = "vp_director"
     ENG_MANAGER = "eng_manager"
+    BUSINESS_OPS_MANAGER = "business_ops_manager"
     IC_ENGINEER = "ic_engineer"
     OTHER = "other"
 
