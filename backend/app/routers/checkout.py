@@ -71,6 +71,7 @@ async def create_advisory_checkout(request: CheckoutRequest):
             }],
             mode="payment",
             customer_email=request.customer_email,
+            allow_promotion_codes=True,
             metadata={
                 "inquiry_id": request.inquiry_id,
                 "customer_name": request.customer_name,
