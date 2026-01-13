@@ -1,23 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
 const CALENDLY_ADVISORY_URL = 'https://calendly.com/hello-compliantphotos/30-minute-meeting';
 
+// Extend window type for Calendly
+declare global {
+  interface Window {
+    Calendly?: {
+      initInlineWidget: (options: {
+        url: string;
+        parentElement: HTMLElement;
+        prefill?: Record<string, string>;
+        utm?: Record<string, string>;
+      }) => void;
+    };
+  }
+}
+
 const BookingSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'verified' | 'failed' | 'missing'>('loading');
+  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const calendlyContainerRef = useRef<HTMLDivElement>(null);
 
   // Load Calendly widget script
   useEffect(() => {
     const existingScript = document.querySelector('script[src*="calendly"]');
-    if (!existingScript) {
+    if (existingScript) {
+      // Script already exists, check if Calendly is ready
+      if (window.Calendly) {
+        setScriptLoaded(true);
+      } else {
+        existingScript.addEventListener('load', () => setScriptLoaded(true));
+      }
+    } else {
       const script = document.createElement('script');
       script.src = 'https://assets.calendly.com/assets/external/widget.js';
       script.async = true;
+      script.onload = () => setScriptLoaded(true);
       document.body.appendChild(script);
     }
   }, []);
+
+  // Initialize Calendly widget when both script is loaded and payment is verified
+  useEffect(() => {
+    if (scriptLoaded && status === 'verified' && calendlyContainerRef.current && window.Calendly) {
+      // Clear any existing content
+      calendlyContainerRef.current.innerHTML = '';
+
+      // Initialize the widget
+      window.Calendly.initInlineWidget({
+        url: `${CALENDLY_ADVISORY_URL}?hide_gdpr_banner=1&primary_color=FFBF00`,
+        parentElement: calendlyContainerRef.current,
+      });
+    }
+  }, [scriptLoaded, status]);
 
   // Verify payment
   useEffect(() => {
@@ -108,8 +146,8 @@ const BookingSuccess: React.FC = () => {
 
         {/* Calendly embed */}
         <div
-          className="calendly-inline-widget rounded-xl overflow-hidden shadow-lg border border-[#E9ECEF]"
-          data-url={`${CALENDLY_ADVISORY_URL}?hide_gdpr_banner=1&primary_color=FFBF00`}
+          ref={calendlyContainerRef}
+          className="rounded-xl overflow-hidden shadow-lg border border-[#E9ECEF]"
           style={{ minWidth: '320px', height: '630px' }}
         />
       </div>
