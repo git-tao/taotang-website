@@ -1,6 +1,14 @@
 import React from 'react';
 
 const Hero: React.FC = () => {
+  const handleViewServices = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const element = document.getElementById('services');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <section className="pt-32 pb-20 md:pt-48 md:pb-28 px-6 bg-[#F8F9FA]">
       <div className="max-w-4xl mx-auto text-center">
@@ -12,6 +20,7 @@ const Hero: React.FC = () => {
         </p>
         <a
           href="#services"
+          onClick={handleViewServices}
           className="btn-primary inline-block px-10 py-4 rounded-md animate-hero animate-hero-delay-2"
         >
           View Services

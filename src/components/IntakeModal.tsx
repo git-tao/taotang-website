@@ -37,18 +37,33 @@ const IntakeModal: React.FC = () => {
   const [firstQuestion, setFirstQuestion] = useState<AIQuestion | null>(null);
   const [animationState, setAnimationState] = useState<AnimationState>('visible');
 
-  // Modal animation state
+  // Modal animation state - separate from isOpen to allow exit animation
+  const [shouldRender, setShouldRender] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   // Handle modal open/close animation
   useEffect(() => {
     if (isOpen) {
-      // Small delay to trigger CSS transition
+      // Opening: render first, then animate in
+      setShouldRender(true);
+      setIsClosing(false);
       requestAnimationFrame(() => {
-        setIsVisible(true);
+        requestAnimationFrame(() => {
+          setIsVisible(true);
+        });
       });
-    } else {
+    } else if (shouldRender) {
+      // Closing: animate out, then stop rendering
+      setIsClosing(true);
       setIsVisible(false);
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+        setIsClosing(false);
+        // Reset form after modal is fully closed
+        handleReset();
+      }, 300);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
@@ -174,15 +189,7 @@ const IntakeModal: React.FC = () => {
     }
   };
 
-  const handleClose = () => {
-    closeModal();
-    // Reset form after modal closes
-    setTimeout(() => {
-      handleReset();
-    }, 300);
-  };
-
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return (
     <div
@@ -201,12 +208,17 @@ const IntakeModal: React.FC = () => {
           relative w-full max-w-xl max-h-[90vh] overflow-y-auto
           bg-white rounded-2xl shadow-2xl
           transition-all duration-300 ease-out
-          ${isVisible ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-4'}
+          ${isVisible && !isClosing
+            ? 'opacity-100 scale-100 translate-y-0'
+            : isClosing
+              ? 'opacity-0 scale-95 translate-y-8'
+              : 'opacity-0 scale-95 -translate-y-4'
+          }
         `}
       >
         {/* Close Button */}
         <button
-          onClick={handleClose}
+          onClick={closeModal}
           className="absolute top-4 right-4 z-10 p-2 rounded-full hover:bg-gray-100 transition-colors"
           aria-label="Close modal"
         >
