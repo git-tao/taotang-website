@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     # Stripe
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
+    stripe_price_advisory: str = ""  # Price ID for $300 advisory session
+
+    # Frontend URL (environment-specific for Stripe redirects)
+    frontend_url: str = "https://taotang.io"
 
     # App settings
     debug: bool = False

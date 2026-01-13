@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IntakeResponse } from '../types';
 
 interface UserData {
@@ -12,10 +12,11 @@ interface OutcomeScreenProps {
   userData?: UserData;
 }
 
-// Calendly URLs - update with actual URLs
-const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30min';
-// For paid advisory, use Calendly with Stripe payment required (or separate booking page)
-const CALENDLY_PAID_ADVISORY = 'https://calendly.com/hello-compliantphotos/paid-advisory';
+// API URL for backend calls
+const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
+
+// Calendly URL for free strategy call
+const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30-minute-meeting';
 
 const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData }) => {
   // Load Calendly widget script for free strategy call
@@ -37,7 +38,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData
       case 'calendly_strategy_free':
         return <FreeStrategyCallOutcome userData={userData} />;
       case 'paid_advisory':
-        return <PaidAdvisoryOutcome userData={userData} />;
+        return <PaidAdvisoryOutcome userData={userData} result={result} />;
       case 'manual':
         return <ManualReviewOutcome />;
       default:
@@ -120,15 +121,40 @@ const FreeStrategyCallOutcome: React.FC<{ userData?: UserData }> = ({ userData }
 
 /**
  * Outcome: Gate FAIL - Paid Advisory Session
+ * Now integrates with Stripe Checkout for payment before booking
  */
-const PaidAdvisoryOutcome: React.FC<{ userData?: UserData }> = ({ userData }) => {
-  // Build Calendly URL with prefilled user data
-  const buildCalendlyUrl = () => {
-    const baseUrl = `${CALENDLY_PAID_ADVISORY}?hide_gdpr_banner=1&primary_color=FFBF00`;
-    if (userData?.name && userData?.email) {
-      return `${baseUrl}&name=${encodeURIComponent(userData.name)}&email=${encodeURIComponent(userData.email)}`;
+const PaidAdvisoryOutcome: React.FC<{ userData?: UserData; result: IntakeResponse }> = ({ userData, result }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleBookAdvisory = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/api/checkout/advisory`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          inquiry_id: result.inquiry_id,
+          customer_email: userData?.email || '',
+          customer_name: userData?.name || '',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Failed to create checkout session');
+      }
+
+      const { checkout_url } = await response.json();
+      window.location.href = checkout_url;
+
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError('Unable to start checkout. Please try again or contact directly.');
+      setIsLoading(false);
     }
-    return baseUrl;
   };
 
   return (
@@ -152,7 +178,7 @@ const PaidAdvisoryOutcome: React.FC<{ userData?: UserData }> = ({ userData }) =>
         </div>
       </div>
 
-      {/* Headline & Body (from design doc) */}
+      {/* Headline & Body */}
       <h2 className="text-2xl font-bold text-[#212529] mb-4">
         Thank You for Your Inquiry
       </h2>
@@ -167,7 +193,7 @@ const PaidAdvisoryOutcome: React.FC<{ userData?: UserData }> = ({ userData }) =>
         <h3 className="text-xl font-bold text-[#212529] mb-2">
           1-Hour Advisory Session
         </h3>
-        <p className="text-4xl font-bold text-[#212529] mb-2">$400</p>
+        <p className="text-4xl font-bold text-[#212529] mb-2">$300</p>
         <p className="text-[#6C757D] mb-6 text-sm">
           Deep-dive consultation on your AI challenges
         </p>
@@ -217,14 +243,20 @@ const PaidAdvisoryOutcome: React.FC<{ userData?: UserData }> = ({ userData }) =>
           </li>
         </ul>
 
-        <a
-          href={buildCalendlyUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all text-center shadow-lg shadow-amber-200/40"
+        {/* Error display */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
+        <button
+          onClick={handleBookAdvisory}
+          disabled={isLoading}
+          className="block w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all text-center shadow-lg shadow-amber-200/40 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Book Your Paid Advisory Session
-        </a>
+          {isLoading ? 'Preparing checkout...' : 'Book Your Paid Advisory Session'}
+        </button>
       </div>
     </div>
   );

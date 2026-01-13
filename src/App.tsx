@@ -10,6 +10,7 @@ import Process from './components/sections/Process';
 import FinalCTA from './components/sections/FinalCTA';
 import { IntakeWizard } from './components/intake';
 import CaseStudyPage from './pages/CaseStudyPage';
+import BookingSuccess from './pages/BookingSuccess';
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
 import IntakeModal from './components/IntakeModal';
@@ -92,6 +93,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/case-study/:slug" element={<CaseStudyPageWrapper />} />
+          <Route path="/booking/success" element={<BookingSuccess />} />
           <Route path="*" element={<NotFoundWrapper />} />
         </Routes>
       </ModalProvider>
