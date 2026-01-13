@@ -16,7 +16,7 @@ CREATE TYPE access_model AS ENUM (
 );
 CREATE TYPE timeline AS ENUM ('urgent', 'soon', 'planning', 'exploring');
 CREATE TYPE budget_range AS ENUM ('under_10k', '10k_25k', '25k_50k', 'over_50k', 'unsure');
-CREATE TYPE role_title AS ENUM ('founder_csuite', 'vp_director', 'eng_manager', 'ic_engineer', 'other');
+CREATE TYPE role_title AS ENUM ('founder_csuite', 'vp_director', 'eng_manager', 'business_ops_manager', 'ic_engineer', 'other');
 CREATE TYPE gate_status AS ENUM ('pass', 'manual', 'fail');
 CREATE TYPE inquiry_status AS ENUM ('new', 'reviewed', 'converted', 'rejected');
 CREATE TYPE qualification AS ENUM ('qualified', 'flagged', 'low_quality');
