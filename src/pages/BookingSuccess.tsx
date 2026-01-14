@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
 const CALENDLY_ADVISORY_URL = 'https://calendly.com/hello-compliantphotos/1-1-with-tao';
@@ -20,7 +20,9 @@ declare global {
 
 const BookingSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'verified' | 'failed' | 'missing'>('loading');
+  const [bookingComplete, setBookingComplete] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const calendlyContainerRef = useRef<HTMLDivElement>(null);
 
@@ -43,9 +45,23 @@ const BookingSuccess: React.FC = () => {
     }
   }, []);
 
+  // Listen for Calendly event_scheduled message
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.event === 'calendly.event_scheduled') {
+        setBookingComplete(true);
+        // Replace history so back button doesn't return to booking page
+        window.history.replaceState(null, '', '/booking/complete');
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   // Initialize Calendly widget when both script is loaded and payment is verified
   useEffect(() => {
-    if (scriptLoaded && status === 'verified' && calendlyContainerRef.current && window.Calendly) {
+    if (scriptLoaded && status === 'verified' && !bookingComplete && calendlyContainerRef.current && window.Calendly) {
       // Clear any existing content
       calendlyContainerRef.current.innerHTML = '';
 
@@ -55,7 +71,7 @@ const BookingSuccess: React.FC = () => {
         parentElement: calendlyContainerRef.current,
       });
     }
-  }, [scriptLoaded, status]);
+  }, [scriptLoaded, status, bookingComplete]);
 
   // Verify payment
   useEffect(() => {
@@ -127,6 +143,36 @@ const BookingSuccess: React.FC = () => {
     );
   }
 
+  // Booking complete - show confirmation
+  if (bookingComplete) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA] p-6">
+        <div className="max-w-md text-center">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-[#212529] mb-4">
+            You're All Set!
+          </h1>
+          <p className="text-[#6C757D] mb-2">
+            Your advisory session has been scheduled.
+          </p>
+          <p className="text-[#6C757D] mb-8">
+            You'll receive a calendar invite and confirmation email shortly with all the details.
+          </p>
+          <Link
+            to="/"
+            className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg"
+          >
+            Return to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   // Verified - show Calendly
   return (
     <div className="min-h-screen bg-[#F8F9FA] py-12 px-6">
@@ -150,6 +196,16 @@ const BookingSuccess: React.FC = () => {
           className="rounded-xl overflow-hidden shadow-lg border border-[#E9ECEF]"
           style={{ minWidth: '320px', height: '630px' }}
         />
+
+        {/* Return home link */}
+        <div className="text-center mt-6">
+          <Link
+            to="/"
+            className="text-sm text-[#6C757D] hover:text-[#212529] underline underline-offset-4"
+          >
+            Return to home page
+          </Link>
+        </div>
       </div>
     </div>
   );
