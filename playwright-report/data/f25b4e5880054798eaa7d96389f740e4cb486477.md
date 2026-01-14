@@ -1,0 +1,225 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: Tao Tang
+      - navigation [ref=e7]:
+        - link "Services" [ref=e8] [cursor=pointer]:
+          - /url: "#services"
+        - link "Case Studies" [ref=e9] [cursor=pointer]:
+          - /url: "#case-studies"
+        - link "How I Work" [ref=e10] [cursor=pointer]:
+          - /url: "#how-i-work"
+        - link "Start a Project" [ref=e11] [cursor=pointer]:
+          - /url: "#initiate"
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "I help teams ship and stabilize production AI systems." [level=1] [ref=e16]
+        - paragraph [ref=e17]: Hands-on, project-based work for engineering and product leaders who need to unblock delivery, audit complex systems, or move from prototype to production. No consulting theater, just clear scope and real outcomes.
+        - link "View Services" [ref=e19] [cursor=pointer]:
+          - /url: "#services"
+      - generic [ref=e22]:
+        - img [ref=e23]
+        - generic [ref=e25]: Professional Portrait
+    - generic [ref=e28]:
+      - heading "Services" [level=2] [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - img [ref=e33]
+          - heading "AI Systems Audit" [level=3] [ref=e35]
+          - paragraph [ref=e36]: A fixed-scope engagement to diagnose critical issues in your existing AI systems. You get a prioritized list of actionable fixes for performance, reliability, and cost.
+          - generic [ref=e37]:
+            - generic [ref=e38]: Core Deliverables
+            - list [ref=e39]:
+              - listitem [ref=e40]: Full Repository Review
+              - listitem [ref=e42]: Architectural Stress Test
+              - listitem [ref=e44]: Cost & Latency Analysis
+              - listitem [ref=e46]: Executive Fix Roadmap
+        - generic [ref=e48]:
+          - img [ref=e50]
+          - heading "Prototype-to-Production" [level=3] [ref=e52]
+          - paragraph [ref=e53]: A 4-week sprint to turn your promising ML prototype into a robust, production-ready system. We build the scaffolding, CI/CD, and monitoring you need to ship with confidence.
+          - generic [ref=e54]:
+            - generic [ref=e55]: Core Deliverables
+            - list [ref=e56]:
+              - listitem [ref=e57]: Hardened Codebase
+              - listitem [ref=e59]: Auto-scaling Deployment
+              - listitem [ref=e61]: Observability Stack
+              - listitem [ref=e63]: Team Handoff Guide
+        - generic [ref=e65]:
+          - img [ref=e67]
+          - heading "RAG Reliability Sprint" [level=3] [ref=e69]
+          - paragraph [ref=e70]: For teams struggling with inconsistent or inaccurate RAG pipeline performance. We diagnose and fix issues in retrieval and generation to deliver trustworthy results.
+          - generic [ref=e71]:
+            - generic [ref=e72]: Core Deliverables
+            - list [ref=e73]:
+              - listitem [ref=e74]: Eval-Driven Benchmark
+              - listitem [ref=e76]: Optimized Embedding Strategy
+              - listitem [ref=e78]: Advanced Reranker Setup
+              - listitem [ref=e80]: System Guardrails
+    - generic [ref=e83]:
+      - heading "A Hands-On Partner for Technical Leaders" [level=2] [ref=e84]
+      - generic [ref=e85]:
+        - paragraph [ref=e87]: I work as a focused, senior-level individual contributor to solve complex AI systems problems. My background includes shipping production systems at Meta and multiple venture-backed startups, combined with a foundational computer science education from Stanford University. I don't manage teams or engage in consulting theater; I build, audit, and stabilize systems.
+        - generic [ref=e88]:
+          - generic [ref=e89]:
+            - img [ref=e90]
+            - generic [ref=e92]: Meta
+          - generic [ref=e94]: Stanford University
+          - generic [ref=e95]:
+            - img [ref=e96]
+            - generic [ref=e98]: Startups
+    - generic [ref=e100]:
+      - heading "Case Studies" [level=2] [ref=e101]
+      - generic [ref=e102]:
+        - link "CompliantPhotos.com Architected and deployed an end-to-end vision AI system for passport photo regulatory compliance. Automated 90% of manual quality control with sub-second latency. Full Stack AI System" [ref=e103] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - heading "CompliantPhotos.com" [level=3] [ref=e106]
+              - img [ref=e107]
+            - paragraph [ref=e109]: Architected and deployed an end-to-end vision AI system for passport photo regulatory compliance. Automated 90% of manual quality control with sub-second latency.
+          - generic [ref=e110]: Full Stack AI System
+        - link "Agent Orchestration Led the engineering of a high-concurrency autonomous agent platform at Meta. Scaled to thousands of concurrent dynamic tool-use workflows with guaranteed state consistency. Infrastructure & Scale" [ref=e111] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - heading "Agent Orchestration" [level=3] [ref=e114]
+              - img [ref=e115]
+            - paragraph [ref=e117]: Led the engineering of a high-concurrency autonomous agent platform at Meta. Scaled to thousands of concurrent dynamic tool-use workflows with guaranteed state consistency.
+          - generic [ref=e118]: Infrastructure & Scale
+    - generic [ref=e120]:
+      - heading "How I Work" [level=2] [ref=e121]
+      - generic [ref=e122]:
+        - paragraph [ref=e123]: I work best with teams who are ready to execute. My process is designed for speed and clarity, with a strong preference for asynchronous communication.
+        - list [ref=e124]:
+          - listitem [ref=e125]:
+            - generic [ref=e126]: Fixed Scope, Fixed Price
+            - paragraph [ref=e127]: All projects are defined with clear deliverables and a fixed price. No open-ended retainers or hourly billing.
+          - listitem [ref=e128]:
+            - generic [ref=e129]: Async-First
+            - paragraph [ref=e130]: We'll use a shared Slack channel and a project management tool. Meetings are rare and only for high-bandwidth decisions.
+          - listitem [ref=e131]:
+            - generic [ref=e132]: Direct Access Required
+            - paragraph [ref=e133]: To be effective, I require access to your code repository, cloud environment, or a dedicated sandbox.
+          - listitem [ref=e134]:
+            - generic [ref=e135]: No People Management
+            - paragraph [ref=e136]: My role is to be a senior, hands-on individual contributor. I do not manage internal teams or staff.
+    - generic [ref=e138]:
+      - heading "Initiate a Project" [level=2] [ref=e139]
+      - generic [ref=e140]:
+        - generic [ref=e141]:
+          - heading "Let's Build." [level=3] [ref=e142]
+          - paragraph [ref=e143]: If you have a high-stakes challenge that aligns with my services, the first step is a brief technical intake. This is the start of a professional engagement designed for speed and clarity.
+          - generic [ref=e144]:
+            - generic [ref=e145]:
+              - img [ref=e147]
+              - generic [ref=e149]:
+                - paragraph [ref=e150]: Under 3 minutes
+                - paragraph [ref=e151]: Quick, focused questions to understand your needs
+            - generic [ref=e152]:
+              - img [ref=e154]
+              - generic [ref=e156]:
+                - paragraph [ref=e157]: Confidential & technical-first
+                - paragraph [ref=e158]: Your information is secure and used only for evaluation
+            - generic [ref=e159]:
+              - img [ref=e161]
+              - generic [ref=e163]:
+                - paragraph [ref=e164]: Qualified leads get a free call
+                - paragraph [ref=e165]: 30-minute strategy session at no cost
+          - generic [ref=e166]:
+            - paragraph [ref=e167]: Typical response
+            - paragraph [ref=e168]: Under 24 hours
+        - generic [ref=e170]:
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - generic [ref=e173]:
+                - img [ref=e175]
+                - generic [ref=e177]: Basic Info
+              - generic [ref=e179]:
+                - img [ref=e181]
+                - generic [ref=e183]: Project Details
+              - generic [ref=e185]:
+                - generic [ref=e186]: "3"
+                - generic [ref=e187]: Qualification
+            - generic [ref=e188]: "Estimated time: under 3 minutes"
+          - generic [ref=e189]:
+            - generic [ref=e190]:
+              - heading "A few final questions" [level=3] [ref=e191]
+              - paragraph [ref=e192]: This helps me determine the best way to work together.
+            - generic [ref=e193]:
+              - text: How soon do you need to see progress? *
+              - generic [ref=e194]:
+                - button "Urgent Within the next 2 weeks" [ref=e195] [cursor=pointer]:
+                  - paragraph [ref=e196]: Urgent
+                  - paragraph [ref=e197]: Within the next 2 weeks
+                - button "Soon Within the next month" [ref=e198] [cursor=pointer]:
+                  - paragraph [ref=e199]: Soon
+                  - paragraph [ref=e200]: Within the next month
+                - button "Planning 1-3 months" [ref=e201] [cursor=pointer]:
+                  - paragraph [ref=e202]: Planning
+                  - paragraph [ref=e203]: 1-3 months
+                - button "Exploring 3+ months" [ref=e204] [cursor=pointer]:
+                  - paragraph [ref=e205]: Exploring
+                  - paragraph [ref=e206]: 3+ months
+            - generic [ref=e207]:
+              - text: Estimated budget for this project? *
+              - paragraph [ref=e208]: A range is fine—I use this only to ensure fit.
+              - generic [ref=e209]:
+                - button "< $10,000" [ref=e210] [cursor=pointer]
+                - button "$10,000 - $25,000" [ref=e211] [cursor=pointer]
+                - button "$25,000 - $50,000" [ref=e212] [cursor=pointer]
+                - button "$50,000+" [ref=e213] [cursor=pointer]
+                - button "Not sure" [ref=e214] [cursor=pointer]
+            - generic [ref=e215]:
+              - text: How would we work together? *
+              - paragraph [ref=e216]: To be effective, I require direct access to your code and systems.
+              - generic [ref=e217]:
+                - button "Remote Access External collaborators can use their own tools with access to our repos/cloud" [ref=e218] [cursor=pointer]:
+                  - generic [ref=e222]:
+                    - paragraph [ref=e223]: Remote Access
+                    - paragraph [ref=e224]: External collaborators can use their own tools with access to our repos/cloud
+                - button "Your Environment Work in our environment with your own tools" [ref=e225] [cursor=pointer]:
+                  - generic [ref=e228]:
+                    - paragraph [ref=e229]: Your Environment
+                    - paragraph [ref=e230]: Work in our environment with your own tools
+                - button "Managed Devices We require managed devices for external collaborators" [ref=e231] [cursor=pointer]:
+                  - generic [ref=e234]:
+                    - paragraph [ref=e235]: Managed Devices
+                    - paragraph [ref=e236]: We require managed devices for external collaborators
+                - button "On-Premise Only On-premise only, no external tools allowed" [ref=e237] [cursor=pointer]:
+                  - generic [ref=e240]:
+                    - paragraph [ref=e241]: On-Premise Only
+                    - paragraph [ref=e242]: On-premise only, no external tools allowed
+                - button "Not sure Need to check with IT" [ref=e243] [cursor=pointer]:
+                  - generic [ref=e246]:
+                    - paragraph [ref=e247]: Not sure
+                    - paragraph [ref=e248]: Need to check with IT
+            - generic [ref=e249]:
+              - button "Back" [disabled] [ref=e250]
+              - button "Submitting..." [disabled] [ref=e251]:
+                - generic [ref=e252]:
+                  - img [ref=e253]
+                  - text: Submitting...
+            - paragraph [ref=e256]: This starts a professional consulting process.
+    - generic [ref=e258]:
+      - heading "Ready to Begin?" [level=2] [ref=e259]
+      - paragraph [ref=e260]: Let's solve a concrete problem.
+      - link "Start a Project Inquiry" [ref=e261] [cursor=pointer]:
+        - /url: "#initiate"
+  - contentinfo [ref=e262]:
+    - generic [ref=e263]:
+      - generic [ref=e264]:
+        - generic [ref=e265]: Tao Tang
+        - generic [ref=e266]: © 2026 — AI Systems Engineer
+      - generic [ref=e267]:
+        - link "LinkedIn" [ref=e268] [cursor=pointer]:
+          - /url: "#"
+        - link "GitHub" [ref=e269] [cursor=pointer]:
+          - /url: "#"
+        - link "Twitter" [ref=e270] [cursor=pointer]:
+          - /url: "#"
+```

@@ -16,7 +16,7 @@ interface OutcomeScreenProps {
 const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
 
 // Calendly URL for free strategy call
-const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30-minute-meeting';
+const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30min';
 
 const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData }) => {
   // Load Calendly widget script for free strategy call
