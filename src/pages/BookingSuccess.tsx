@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
-const CALENDLY_ADVISORY_URL = 'https://calendly.com/hello-compliantphotos/30-minute-meeting';
+const CALENDLY_ADVISORY_URL = 'https://calendly.com/hello-compliantphotos/1-1-with-tao';
 
 // Extend window type for Calendly
 declare global {
