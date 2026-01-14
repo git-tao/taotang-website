@@ -183,12 +183,6 @@ const IntakeModal: React.FC = () => {
     setAnimationState('visible');
   };
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
-    }
-  };
-
   if (!shouldRender) return null;
 
   return (
@@ -198,7 +192,6 @@ const IntakeModal: React.FC = () => {
         transition-all duration-300 ease-out
         ${isVisible ? 'bg-black/50 backdrop-blur-sm' : 'bg-black/0 backdrop-blur-0'}
       `}
-      onClick={handleBackdropClick}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
