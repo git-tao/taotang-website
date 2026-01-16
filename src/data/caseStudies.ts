@@ -3,7 +3,6 @@ export interface CaseStudy {
   title: string;
   subtitle: string;
   category: string;
-  projectType?: string;
   externalLink?: string;
   summary: string;
   fullContent: {
@@ -21,7 +20,6 @@ export const caseStudies: CaseStudy[] = [
     title: 'CompliantPhotos SaaS',
     subtitle: 'Neuro-Symbolic Passport Validation',
     category: 'Full-Stack AI Product',
-    projectType: 'Personal Project / Production SaaS',
     externalLink: 'https://compliantphotos.com',
     summary: 'Combining deterministic computer vision for strict measurements with LLM reasoning for qualitative feedback',
     fullContent: {
@@ -137,7 +135,6 @@ Secondary constraint: false positives carry asymmetric risk. Incorrectly penaliz
     title: 'SuperWhisperer',
     subtitle: 'Privacy-First Meeting Intelligence',
     category: 'Real-Time AI & Speech Intelligence',
-    projectType: 'Personal Project / Technical Design',
     summary: 'Hybrid edge-cloud architecture delivering sub-3s contextual cues without sending raw audio to the cloud',
     fullContent: {
       problem: `Enterprises block cloud-based meeting assistants (Otter, Fireflies, etc.) due to data leakage risks. IT security reviews routinely reject tools that send raw audio to external servers. Users want real-time contextual cues during meetings ("What did we decide about X?"), but security prohibits sending raw audio to OpenAI or Google.

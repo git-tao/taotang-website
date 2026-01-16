@@ -101,22 +101,15 @@ const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ study, isOpen, onClose 
         {/* Scrollable content */}
         <div ref={contentRef} className="overflow-y-auto max-h-[92vh]">
           {/* Hero header with gradient */}
-          <div className="bg-gradient-to-br from-[#212529] to-[#343a40] text-white px-8 md:px-12 py-10 md:py-12">
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className="text-xs font-bold text-[#FFBF00] uppercase tracking-widest">
-                {study.category}
-              </span>
-              {study.projectType && (
-                <span className="text-xs text-white/60 bg-white/10 px-2 py-1 rounded">
-                  {study.projectType}
-                </span>
-              )}
-            </div>
+          <div className="bg-gradient-to-br from-[#212529] to-[#343a40] px-8 md:px-12 py-10 md:py-12">
+            <span className="text-xs font-bold text-[#FFBF00] uppercase tracking-widest">
+              {study.category}
+            </span>
 
-            <h2 id="modal-title" className="text-3xl md:text-4xl font-bold mb-2">
+            <h2 id="modal-title" className="text-3xl md:text-4xl font-bold text-white mt-4 mb-2">
               {study.title}
             </h2>
-            <p className="text-lg text-white/70 mb-4">
+            <p className="text-lg text-white/80 mb-4">
               {study.subtitle}
             </p>
 
