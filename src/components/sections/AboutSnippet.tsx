@@ -31,14 +31,13 @@ const AboutSnippet: React.FC = () => {
               I work as a focused, senior-level individual contributor to solve
               complex AI systems problems. My background includes shipping production
               systems at <span className="font-semibold">Meta</span> and multiple
-              venture-backed startups, combined with a foundational computer science
-              education from <span className="font-semibold">Stanford University</span>.
+              venture-backed startups, with an <span className="font-semibold">MS in Computer Science</span>.
             </p>
 
             {/* Enhanced Credentials */}
             <div className="flex flex-wrap gap-4 animate-on-scroll">
               <div className="credential-badge">Meta</div>
-              <div className="credential-badge">Stanford University</div>
+              <div className="credential-badge">MS Computer Science</div>
               <div className="credential-badge">Venture-backed Startups</div>
             </div>
           </div>
