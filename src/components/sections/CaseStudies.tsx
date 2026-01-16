@@ -23,7 +23,7 @@ const CaseStudies: React.FC = () => {
       <section id="case-studies" className="section-padding px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-[#212529] mb-12 animate-on-scroll">
-            Case Studies
+            Past Projects
           </h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

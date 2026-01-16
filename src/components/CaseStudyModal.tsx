@@ -91,15 +91,49 @@ const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ study, isOpen, onClose 
         <div ref={contentRef} className="overflow-y-auto max-h-[90vh] p-8 md:p-12">
           {/* Header */}
           <header className="mb-10">
-            <span className="inline-block text-xs font-bold text-[#FFBF00] uppercase tracking-widest mb-3">
-              {study.category}
-            </span>
+            <div className="flex flex-wrap items-center gap-3 mb-3">
+              <span className="text-xs font-bold text-[#FFBF00] uppercase tracking-widest">
+                {study.category}
+              </span>
+              {study.projectType && (
+                <span className="text-xs text-[#6C757D] bg-[#F8F9FA] px-2 py-1 rounded">
+                  {study.projectType}
+                </span>
+              )}
+            </div>
             <h2 id="modal-title" className="text-3xl md:text-4xl font-bold text-[#212529] mb-2">
               {study.title}
+              {study.externalLink && (
+                <a
+                  href={study.externalLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center ml-3 text-lg text-[#FFBF00] hover:text-[#E6AC00] transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
             </h2>
-            <p className="text-lg md:text-xl text-[#6C757D] mb-6">
+            <p className="text-lg md:text-xl text-[#6C757D] mb-2">
               {study.subtitle}
             </p>
+            {study.externalLink && (
+              <a
+                href={study.externalLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-sm text-[#FFBF00] hover:text-[#E6AC00] transition-colors mb-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {study.externalLink.replace('https://', '')}
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            )}
 
             {/* Impact metrics */}
             <div className="grid grid-cols-3 gap-4">
@@ -125,9 +159,11 @@ const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ study, isOpen, onClose 
           {/* The Problem */}
           <section className="mb-10">
             <h3 className="text-xl font-bold text-[#212529] mb-4">The Problem</h3>
-            <p className="text-[#495057] leading-relaxed">
-              {study.fullContent.problem}
-            </p>
+            <div className="text-[#495057] leading-relaxed space-y-4">
+              {study.fullContent.problem.split('\n\n').map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
+            </div>
           </section>
 
           {/* The Architecture */}
