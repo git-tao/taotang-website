@@ -9,7 +9,6 @@ import CaseStudies from './components/sections/CaseStudies';
 import Process from './components/sections/Process';
 import FinalCTA from './components/sections/FinalCTA';
 import { IntakeWizard } from './components/intake';
-import CaseStudyPage from './pages/CaseStudyPage';
 import BookingSuccess from './pages/BookingSuccess';
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
@@ -57,20 +56,6 @@ const HomePage: React.FC = () => {
   );
 };
 
-// Wrapper component that provides modal context to case study pages
-const CaseStudyPageWrapper: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <main>
-        <CaseStudyPage />
-      </main>
-      <Footer />
-      <IntakeModal />
-    </div>
-  );
-};
-
 // Wrapper for NotFound page
 const NotFoundWrapper: React.FC = () => {
   return (
@@ -92,7 +77,6 @@ const App: React.FC = () => {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/case-study/:slug" element={<CaseStudyPageWrapper />} />
           <Route path="/booking/success" element={<BookingSuccess />} />
           <Route path="*" element={<NotFoundWrapper />} />
         </Routes>
