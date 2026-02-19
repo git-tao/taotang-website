@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
@@ -81,6 +83,8 @@ const App: React.FC = () => {
           <Route path="*" element={<NotFoundWrapper />} />
         </Routes>
       </ModalProvider>
+      <Analytics />
+      <SpeedInsights />
     </BrowserRouter>
   );
 };
