@@ -10,7 +10,6 @@ import AboutSnippet from './components/sections/AboutSnippet';
 import CaseStudies from './components/sections/CaseStudies';
 import Process from './components/sections/Process';
 import FinalCTA from './components/sections/FinalCTA';
-import { IntakeWizard } from './components/intake';
 
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
@@ -49,7 +48,6 @@ const HomePage: React.FC = () => {
         <AboutSnippet />
         <CaseStudies />
         <Process />
-        <IntakeWizard />
         <FinalCTA />
       </main>
       <Footer />

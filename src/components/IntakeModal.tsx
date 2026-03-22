@@ -2,34 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../context/ModalContext';
 import {
   FormData,
-  IntakeResponse,
   WizardStep,
   initialFormData,
 } from './intake/types';
 import ProgressIndicator from './intake/components/ProgressIndicator';
 import BasicInfoStep from './intake/components/BasicInfoStep';
 import ProjectDetailsStep from './intake/components/ProjectDetailsStep';
-import OutcomeScreen from './intake/components/OutcomeScreen';
 
-type WizardState = 'form' | 'success';
+// Google Calendar Appointment Scheduling URL
+const BOOKING_URL = 'https://calendar.app.google/yochBqeYtLimcXc76';
 
 const IntakeModal: React.FC = () => {
   const { isOpen, closeModal } = useModal();
   const [step, setStep] = useState<WizardStep>(1);
-  const [wizardState, setWizardState] = useState<WizardState>('form');
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [result, setResult] = useState<IntakeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [booked, setBooked] = useState(false);
 
-  // Modal animation state - separate from isOpen to allow exit animation
+  // Modal animation state
   const [shouldRender, setShouldRender] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  // Handle modal open/close animation
   useEffect(() => {
     if (isOpen) {
-      // Opening: render first, then animate in
       setShouldRender(true);
       setIsClosing(false);
       requestAnimationFrame(() => {
@@ -38,13 +34,11 @@ const IntakeModal: React.FC = () => {
         });
       });
     } else if (shouldRender) {
-      // Closing: animate out, then stop rendering
       setIsClosing(true);
       setIsVisible(false);
       const timer = setTimeout(() => {
         setShouldRender(false);
         setIsClosing(false);
-        // Reset form after modal is fully closed
         handleReset();
       }, 300);
       return () => clearTimeout(timer);
@@ -56,29 +50,23 @@ const IntakeModal: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    setStep((prev) => Math.min(prev + 1, 2) as WizardStep);
+    setStep((prev) => Math.min(prev + 1, 3) as WizardStep);
   };
 
   const handlePrevStep = () => {
     setStep((prev) => Math.max(prev - 1, 1) as WizardStep);
   };
 
-  const handleSubmit = () => {
-    setResult({
-      inquiry_id: '',
-      gate_status: 'pass',
-      routing_result: 'calendly_strategy_free',
-      message: '',
-    });
-    setWizardState('success');
+  const handleBookingClick = () => {
+    setBooked(true);
+    window.open(BOOKING_URL, '_blank', 'noopener,noreferrer');
   };
 
   const handleReset = () => {
     setStep(1);
-    setWizardState('form');
     setFormData(initialFormData);
-    setResult(null);
     setError(null);
+    setBooked(false);
   };
 
   if (!shouldRender) return null;
@@ -119,49 +107,101 @@ const IntakeModal: React.FC = () => {
         </button>
 
         <div className="p-8">
-          {/* Success State */}
-          {wizardState === 'success' && result ? (
-            <OutcomeScreen
-              result={result}
-              onReset={handleReset}
+          {/* Header */}
+          <div className="mb-6">
+            <h2 id="modal-title" className="text-2xl font-bold text-[#212529]">
+              Free Discovery Call
+            </h2>
+            <p className="text-sm text-[#6C757D] mt-1">
+              30 minutes. No obligation. Let's see if there's a fit.
+            </p>
+          </div>
+
+          <ProgressIndicator currentStep={step} totalSteps={3} />
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          {/* Step 1: About You */}
+          {step === 1 && (
+            <BasicInfoStep
+              formData={formData}
+              onChange={handleFormChange}
+              onNext={handleNextStep}
             />
-          ) : (
-            <>
-              {/* Header */}
-              <div className="mb-6">
-                <h2 id="modal-title" className="text-2xl font-bold text-[#212529]">
-                  Free Discovery Call
-                </h2>
-                <p className="text-sm text-[#6C757D] mt-1">
-                  Tell me about your challenge and book a time
-                </p>
-              </div>
+          )}
 
-              <ProgressIndicator currentStep={step} totalSteps={2} />
+          {/* Step 2: Your Challenge */}
+          {step === 2 && (
+            <ProjectDetailsStep
+              formData={formData}
+              onChange={handleFormChange}
+              onNext={handleNextStep}
+              onBack={handlePrevStep}
+            />
+          )}
 
-              {error && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-sm text-red-700">{error}</p>
+          {/* Step 3: Discovery Call — Booking */}
+          {step === 3 && (
+            <div className="space-y-6">
+              {!booked ? (
+                <>
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-[#212529] mb-2">
+                      You're all set — let's talk
+                    </h3>
+                    <p className="text-[#6C757D] text-sm max-w-sm mx-auto">
+                      Pick a time for a free 30-minute discovery call.
+                      No pitch, just a focused conversation about your challenge.
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={handleBookingClick}
+                    className="w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all shadow-lg shadow-amber-200/40 transform hover:-translate-y-0.5 text-lg"
+                  >
+                    Book a Free Discovery Call
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handlePrevStep}
+                    className="w-full py-3 rounded-lg font-medium text-sm bg-white border border-[#E9ECEF] text-[#6C757D] hover:border-[#FFBF00] hover:text-[#212529] transition-all"
+                  >
+                    Back
+                  </button>
+                </>
+              ) : (
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-[#212529] mb-2">
+                    You're All Set
+                  </h3>
+                  <p className="text-[#6C757D] text-sm mb-6 max-w-sm mx-auto">
+                    Complete your booking in the Google Calendar tab.
+                    You'll receive a confirmation email once scheduled.
+                  </p>
+                  <button
+                    onClick={handleBookingClick}
+                    className="text-sm font-medium text-[#FFBF00] hover:text-[#E6AC00] underline underline-offset-4"
+                  >
+                    Open booking page again
+                  </button>
                 </div>
               )}
-
-              {step === 1 && (
-                <BasicInfoStep
-                  formData={formData}
-                  onChange={handleFormChange}
-                  onNext={handleNextStep}
-                />
-              )}
-
-              {step === 2 && (
-                <ProjectDetailsStep
-                  formData={formData}
-                  onChange={handleFormChange}
-                  onNext={handleSubmit}
-                  onBack={handlePrevStep}
-                />
-              )}
-            </>
+            </div>
           )}
         </div>
       </div>

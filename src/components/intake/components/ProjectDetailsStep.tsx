@@ -340,7 +340,7 @@ const ProjectDetailsStep: React.FC<ProjectDetailsStepProps> = ({
             }
           `}
         >
-          Book a Free Discovery Call
+          Continue
         </button>
       </div>
     </form>

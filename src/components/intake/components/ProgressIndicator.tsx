@@ -6,7 +6,7 @@ interface ProgressIndicatorProps {
   totalSteps: number;
 }
 
-const STEP_LABELS = ['About You', 'Your Challenge'];
+const STEP_LABELS = ['About You', 'Your Challenge', 'Discovery Call'];
 
 const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   currentStep,
@@ -79,7 +79,7 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
       {/* Estimated time */}
       <div className="mt-4 text-center">
         <span className="text-xs text-[#6C757D]">
-          Estimated time: under 1 minute
+          Estimated time: under 2 minutes
         </span>
       </div>
     </div>

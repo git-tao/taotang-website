@@ -1,6 +1,9 @@
 import React from 'react';
+import { useModal } from '../../context/ModalContext';
 
 const Hero: React.FC = () => {
+  const { openModal } = useModal();
+
   const handleViewServices = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const element = document.getElementById('services');
@@ -26,16 +29,12 @@ const Hero: React.FC = () => {
           >
             View Services
           </a>
-          <a
-            href="#initiate"
-            onClick={(e) => {
-              e.preventDefault();
-              document.getElementById('initiate')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }}
-            className="inline-block px-10 py-4 rounded-md border-2 border-[#212529] text-[#212529] font-bold hover:bg-[#212529] hover:text-white transition-all"
+          <button
+            onClick={openModal}
+            className="px-10 py-4 rounded-md border-2 border-[#212529] text-[#212529] font-bold hover:bg-[#212529] hover:text-white transition-all"
           >
             Free Discovery Call
-          </a>
+          </button>
         </div>
       </div>
     </section>
