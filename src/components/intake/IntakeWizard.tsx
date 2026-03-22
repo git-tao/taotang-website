@@ -8,9 +8,7 @@ import {
 import ProgressIndicator from './components/ProgressIndicator';
 import BasicInfoStep from './components/BasicInfoStep';
 import ProjectDetailsStep from './components/ProjectDetailsStep';
-import QualificationStep from './components/QualificationStep';
 import OutcomeScreen from './components/OutcomeScreen';
-import { evaluateGate } from './utils/gateLogic';
 
 type WizardState = 'form' | 'success';
 
@@ -26,7 +24,7 @@ const IntakeWizard: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    setStep((prev) => Math.min(prev + 1, 3) as WizardStep);
+    setStep((prev) => Math.min(prev + 1, 2) as WizardStep);
   };
 
   const handlePrevStep = () => {
@@ -34,13 +32,11 @@ const IntakeWizard: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Evaluate gate client-side — no backend needed
-    const gateResult = evaluateGate(formData);
-
+    // All paths lead to the booking screen — no gate needed
     setResult({
       inquiry_id: '',
-      gate_status: gateResult.gate_status,
-      routing_result: gateResult.routing_result,
+      gate_status: 'pass',
+      routing_result: 'calendly_strategy_free',
       message: '',
     });
     setWizardState('success');
@@ -70,115 +66,69 @@ const IntakeWizard: React.FC = () => {
   return (
     <section id="initiate" className="section-padding px-6 bg-[#F8F9FA] border-y border-[#E9ECEF]">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-[#212529] mb-12">Initiate a Project</h2>
+        <h2 className="text-3xl font-bold text-[#212529] mb-12">Free Discovery Call</h2>
 
         <div className="grid lg:grid-cols-2 gap-16">
           {/* Left Column - Value Proposition */}
           <div className="hidden lg:block">
             <h3 className="text-3xl font-bold text-[#212529] mb-6 leading-tight">
-              Let's Build.
+              Let's Talk.
             </h3>
             <p className="text-[#212529] leading-relaxed mb-8 text-lg font-light">
-              If you have a high-stakes challenge that aligns with my services, the first
-              step is a brief technical intake. This is the start of a professional
-              engagement designed for speed and clarity.
+              Tell me a little about your challenge and book a free 30-minute
+              discovery call. No pitch, no pressure — just a focused conversation
+              about what you're trying to solve.
             </p>
 
             <div className="space-y-5">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 text-[#FFBF00]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
+                  <svg className="w-5 h-5 text-[#FFBF00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium text-[#212529]">Under 3 minutes</p>
-                  <p className="text-sm text-[#6C757D]">
-                    Quick, focused questions to understand your needs
-                  </p>
+                  <p className="font-medium text-[#212529]">Under 1 minute to book</p>
+                  <p className="text-sm text-[#6C757D]">Two quick steps, then pick a time</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 text-[#FFBF00]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    />
+                  <svg className="w-5 h-5 text-[#FFBF00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium text-[#212529]">Confidential & technical-first</p>
-                  <p className="text-sm text-[#6C757D]">
-                    Your information is secure and used only for evaluation
-                  </p>
+                  <p className="font-medium text-[#212529]">30 minutes, no obligation</p>
+                  <p className="text-sm text-[#6C757D]">Free strategy conversation about your project</p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 text-[#FFBF00]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
+                  <svg className="w-5 h-5 text-[#FFBF00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
                 <div>
-                  <p className="font-medium text-[#212529]">Qualified leads get a free call</p>
-                  <p className="text-sm text-[#6C757D]">
-                    30-minute strategy session at no cost
-                  </p>
+                  <p className="font-medium text-[#212529]">Walk away with clarity</p>
+                  <p className="text-sm text-[#6C757D]">Concrete next steps, whether we work together or not</p>
                 </div>
               </div>
-            </div>
-
-            {/* Trust indicators */}
-            <div className="mt-10 pt-8 border-t border-[#E9ECEF]">
-              <p className="text-xs text-[#6C757D] uppercase tracking-wider mb-4">
-                Typical response
-              </p>
-              <p className="text-2xl font-bold text-[#212529]">Under 24 hours</p>
             </div>
           </div>
 
           {/* Right Column - Form */}
-          <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-[#E9ECEF] min-h-[500px]">
-            <ProgressIndicator currentStep={step} totalSteps={3} />
+          <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-[#E9ECEF] min-h-[400px]">
+            <ProgressIndicator currentStep={step} totalSteps={2} />
 
-            {/* Error Message */}
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-700">{error}</p>
               </div>
             )}
 
-            {/* Step Content */}
             {step === 1 && (
               <BasicInfoStep
                 formData={formData}
@@ -191,18 +141,8 @@ const IntakeWizard: React.FC = () => {
               <ProjectDetailsStep
                 formData={formData}
                 onChange={handleFormChange}
-                onNext={handleNextStep}
+                onNext={handleSubmit}
                 onBack={handlePrevStep}
-              />
-            )}
-
-            {step === 3 && (
-              <QualificationStep
-                formData={formData}
-                onChange={handleFormChange}
-                onSubmit={handleSubmit}
-                onBack={handlePrevStep}
-                isSubmitting={false}
               />
             )}
           </div>

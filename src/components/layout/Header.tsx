@@ -23,7 +23,7 @@ const Header: React.FC = () => {
             onClick={handleStartProject}
             className="px-5 py-2.5 bg-[#FFBF00] text-[#212529] text-sm font-semibold rounded-md hover:bg-[#E6AC00] transition-all shadow-sm"
           >
-            Start a Project
+            Free Discovery Call
           </button>
         </nav>
       </div>

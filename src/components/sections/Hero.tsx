@@ -18,13 +18,25 @@ const Hero: React.FC = () => {
         <p className="text-lg md:text-xl text-[#6C757D] mb-10 max-w-2xl mx-auto leading-relaxed animate-hero animate-hero-delay-1">
           Hands-on, project-based work for engineering and product leaders who need to unblock delivery, audit complex systems, or move from prototype to production.
         </p>
-        <a
-          href="#services"
-          onClick={handleViewServices}
-          className="btn-primary inline-block px-10 py-4 rounded-md animate-hero animate-hero-delay-2"
-        >
-          View Services
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-hero animate-hero-delay-2">
+          <a
+            href="#services"
+            onClick={handleViewServices}
+            className="btn-primary inline-block px-10 py-4 rounded-md"
+          >
+            View Services
+          </a>
+          <a
+            href="#initiate"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('initiate')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="inline-block px-10 py-4 rounded-md border-2 border-[#212529] text-[#212529] font-bold hover:bg-[#212529] hover:text-white transition-all"
+          >
+            Free Discovery Call
+          </a>
+        </div>
       </div>
     </section>
   );

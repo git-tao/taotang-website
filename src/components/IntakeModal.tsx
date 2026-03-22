@@ -9,9 +9,7 @@ import {
 import ProgressIndicator from './intake/components/ProgressIndicator';
 import BasicInfoStep from './intake/components/BasicInfoStep';
 import ProjectDetailsStep from './intake/components/ProjectDetailsStep';
-import QualificationStep from './intake/components/QualificationStep';
 import OutcomeScreen from './intake/components/OutcomeScreen';
-import { evaluateGate } from './intake/utils/gateLogic';
 
 type WizardState = 'form' | 'success';
 
@@ -58,7 +56,7 @@ const IntakeModal: React.FC = () => {
   };
 
   const handleNextStep = () => {
-    setStep((prev) => Math.min(prev + 1, 3) as WizardStep);
+    setStep((prev) => Math.min(prev + 1, 2) as WizardStep);
   };
 
   const handlePrevStep = () => {
@@ -66,11 +64,10 @@ const IntakeModal: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    const gateResult = evaluateGate(formData);
     setResult({
       inquiry_id: '',
-      gate_status: gateResult.gate_status,
-      routing_result: gateResult.routing_result,
+      gate_status: 'pass',
+      routing_result: 'calendly_strategy_free',
       message: '',
     });
     setWizardState('success');
@@ -133,14 +130,14 @@ const IntakeModal: React.FC = () => {
               {/* Header */}
               <div className="mb-6">
                 <h2 id="modal-title" className="text-2xl font-bold text-[#212529]">
-                  Start a Project
+                  Free Discovery Call
                 </h2>
                 <p className="text-sm text-[#6C757D] mt-1">
-                  Quick intake to understand your needs
+                  Tell me about your challenge and book a time
                 </p>
               </div>
 
-              <ProgressIndicator currentStep={step} totalSteps={3} />
+              <ProgressIndicator currentStep={step} totalSteps={2} />
 
               {error && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -160,18 +157,8 @@ const IntakeModal: React.FC = () => {
                 <ProjectDetailsStep
                   formData={formData}
                   onChange={handleFormChange}
-                  onNext={handleNextStep}
+                  onNext={handleSubmit}
                   onBack={handlePrevStep}
-                />
-              )}
-
-              {step === 3 && (
-                <QualificationStep
-                  formData={formData}
-                  onChange={handleFormChange}
-                  onSubmit={handleSubmit}
-                  onBack={handlePrevStep}
-                  isSubmitting={false}
                 />
               )}
             </>

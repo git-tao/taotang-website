@@ -133,4 +133,4 @@ export interface GateEvaluationPreview {
 }
 
 // Wizard step type
-export type WizardStep = 1 | 2 | 3;
+export type WizardStep = 1 | 2;
