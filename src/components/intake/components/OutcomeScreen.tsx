@@ -33,7 +33,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset }) => {
           onClick={onReset}
           className="text-sm font-medium text-[#FFBF00] hover:text-[#E6AC00] underline underline-offset-4"
         >
-          Submit another inquiry
+          Start over
         </button>
       </div>
     </div>
@@ -66,12 +66,11 @@ const FreeStrategyCallOutcome: React.FC = () => {
       </div>
 
       <h2 className="text-2xl font-bold text-[#212529] mb-4">
-        Thank You for Your Application
+        Let's Talk
       </h2>
       <p className="text-[#6C757D] mb-6 max-w-md mx-auto">
-        Your project looks like a strong potential fit. The next step is a complimentary
-        30-minute strategy call to discuss your goals in more detail and determine the
-        best path forward.
+        Your project looks like a strong potential fit. Pick a time below
+        for a free discovery call to discuss your goals and the best path forward.
       </p>
 
       <a
@@ -80,7 +79,7 @@ const FreeStrategyCallOutcome: React.FC = () => {
         rel="noopener noreferrer"
         className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
       >
-        Book Your Free Strategy Call
+        Book a Discovery Call
       </a>
     </div>
   );
@@ -112,11 +111,11 @@ const AdvisoryOutcome: React.FC = () => {
       </div>
 
       <h2 className="text-2xl font-bold text-[#212529] mb-4">
-        Thank You for Your Inquiry
+        Let's Talk
       </h2>
       <p className="text-[#6C757D] mb-8 max-w-md mx-auto">
-        Based on your project details, I'd recommend scheduling a call to discuss
-        your needs and determine the best path forward.
+        I'd love to learn more about your project. Pick a time below
+        for a discovery call to discuss your needs.
       </p>
 
       <a
@@ -125,7 +124,7 @@ const AdvisoryOutcome: React.FC = () => {
         rel="noopener noreferrer"
         className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
       >
-        Book a Call
+        Book a Discovery Call
       </a>
     </div>
   );

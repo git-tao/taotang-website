@@ -4,9 +4,6 @@ import {
   FormData,
   IntakeResponse,
   WizardStep,
-  GateStatus,
-  RoutingResult,
-  AIQuestion,
   initialFormData,
 } from './intake/types';
 import ProgressIndicator from './intake/components/ProgressIndicator';
@@ -14,15 +11,9 @@ import BasicInfoStep from './intake/components/BasicInfoStep';
 import ProjectDetailsStep from './intake/components/ProjectDetailsStep';
 import QualificationStep from './intake/components/QualificationStep';
 import OutcomeScreen from './intake/components/OutcomeScreen';
-import ClarificationFlow from './intake/components/ClarificationFlow';
+import { evaluateGate } from './intake/utils/gateLogic';
 
-// API endpoint
-const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
-
-type WizardState = 'form' | 'submitting' | 'clarifying' | 'success';
-type AnimationState = 'visible' | 'exiting' | 'entering';
-
-const AI_MAX_QUESTIONS = 3;
+type WizardState = 'form' | 'success';
 
 const IntakeModal: React.FC = () => {
   const { isOpen, closeModal } = useModal();
@@ -31,11 +22,6 @@ const IntakeModal: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [result, setResult] = useState<IntakeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // AI Clarification state
-  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
-  const [firstQuestion, setFirstQuestion] = useState<AIQuestion | null>(null);
-  const [animationState, setAnimationState] = useState<AnimationState>('visible');
 
   // Modal animation state - separate from isOpen to allow exit animation
   const [shouldRender, setShouldRender] = useState(false);
@@ -79,74 +65,15 @@ const IntakeModal: React.FC = () => {
     setStep((prev) => Math.max(prev - 1, 1) as WizardStep);
   };
 
-  const handleSubmit = async () => {
-    setWizardState('submitting');
-    setError(null);
-
-    try {
-      const payload = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        role_title: formData.role_title,
-        service_type: formData.service_type,
-        access_model: formData.access_model,
-        timeline: formData.timeline,
-        budget_range: formData.budget_range,
-        context_raw: formData.context_raw.trim(),
-        entry_point: 'modal_wizard',
-        referrer: document.referrer || null,
-        answers_raw: {
-          company_name: formData.company_name || null,
-          is_decision_maker: formData.is_decision_maker,
-          audit_symptoms: formData.audit_symptoms || null,
-          project_subtype: formData.project_subtype || null,
-          project_state: formData.project_state || null,
-          rag_issues: formData.rag_issues || null,
-          advisory_questions: formData.advisory_questions || null,
-          desired_outcome: formData.desired_outcome || null,
-        },
-      };
-
-      const response = await fetch(`${API_URL}/api/intake`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Request failed with status ${response.status}`);
-      }
-
-      const data: IntakeResponse = await response.json();
-
-      if (data.needs_clarification && data.ai_session_id && data.first_question) {
-        setAnimationState('exiting');
-        setTimeout(() => {
-          setAiSessionId(data.ai_session_id!);
-          setFirstQuestion(data.first_question as AIQuestion);
-          setResult(data);
-          setWizardState('clarifying');
-          setAnimationState('entering');
-          setTimeout(() => {
-            setAnimationState('visible');
-          }, 300);
-        }, 250);
-      } else {
-        setResult(data);
-        setWizardState('success');
-      }
-    } catch (err) {
-      console.error('Submission error:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'An error occurred. Please try again or contact directly.'
-      );
-      setWizardState('form');
-    }
+  const handleSubmit = () => {
+    const gateResult = evaluateGate(formData);
+    setResult({
+      inquiry_id: '',
+      gate_status: gateResult.gate_status,
+      routing_result: gateResult.routing_result,
+      message: '',
+    });
+    setWizardState('success');
   };
 
   const handleReset = () => {
@@ -155,32 +82,6 @@ const IntakeModal: React.FC = () => {
     setFormData(initialFormData);
     setResult(null);
     setError(null);
-    setAiSessionId(null);
-    setFirstQuestion(null);
-    setAnimationState('visible');
-  };
-
-  const handleClarificationComplete = (finalResult: {
-    gate_status: GateStatus;
-    routing_result: RoutingResult;
-    message: string;
-  }) => {
-    setResult((prev) => ({
-      ...prev!,
-      gate_status: finalResult.gate_status,
-      routing_result: finalResult.routing_result,
-      message: finalResult.message,
-      needs_clarification: false,
-    }));
-    setWizardState('success');
-  };
-
-  const handleClarificationError = (errorMessage: string) => {
-    setError(errorMessage);
-    setWizardState('form');
-    setAiSessionId(null);
-    setFirstQuestion(null);
-    setAnimationState('visible');
   };
 
   if (!shouldRender) return null;
@@ -226,7 +127,6 @@ const IntakeModal: React.FC = () => {
             <OutcomeScreen
               result={result}
               onReset={handleReset}
-              userData={{ name: formData.name, email: formData.email }}
             />
           ) : (
             <>
@@ -240,77 +140,39 @@ const IntakeModal: React.FC = () => {
                 </p>
               </div>
 
-              {/* Form Content */}
-              {wizardState !== 'clarifying' && (
-                <div
-                  className={`
-                    transition-all duration-250 ease-out
-                    ${animationState === 'exiting' ? 'opacity-0 scale-[0.98] pointer-events-none' : ''}
-                    ${animationState === 'visible' ? 'opacity-100 scale-100' : ''}
-                  `}
-                >
-                  <ProgressIndicator currentStep={step} totalSteps={3} />
+              <ProgressIndicator currentStep={step} totalSteps={3} />
 
-                  {error && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                      <div className="flex items-start gap-3">
-                        <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                        <div>
-                          <p className="text-sm font-medium text-red-800">Submission Error</p>
-                          <p className="text-sm text-red-700 mt-1">{error}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {step === 1 && (
-                    <BasicInfoStep
-                      formData={formData}
-                      onChange={handleFormChange}
-                      onNext={handleNextStep}
-                    />
-                  )}
-
-                  {step === 2 && (
-                    <ProjectDetailsStep
-                      formData={formData}
-                      onChange={handleFormChange}
-                      onNext={handleNextStep}
-                      onBack={handlePrevStep}
-                    />
-                  )}
-
-                  {step === 3 && (
-                    <QualificationStep
-                      formData={formData}
-                      onChange={handleFormChange}
-                      onSubmit={handleSubmit}
-                      onBack={handlePrevStep}
-                      isSubmitting={wizardState === 'submitting'}
-                    />
-                  )}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-700">{error}</p>
                 </div>
               )}
 
-              {/* AI Clarification Flow */}
-              {wizardState === 'clarifying' && aiSessionId && firstQuestion && (
-                <div
-                  className={`
-                    transition-all duration-300 ease-out
-                    ${animationState === 'entering' ? 'opacity-0 scale-[0.98]' : ''}
-                    ${animationState === 'visible' ? 'opacity-100 scale-100' : ''}
-                  `}
-                >
-                  <ClarificationFlow
-                    sessionId={aiSessionId}
-                    initialQuestion={firstQuestion}
-                    maxQuestions={AI_MAX_QUESTIONS}
-                    onComplete={handleClarificationComplete}
-                    onError={handleClarificationError}
-                  />
-                </div>
+              {step === 1 && (
+                <BasicInfoStep
+                  formData={formData}
+                  onChange={handleFormChange}
+                  onNext={handleNextStep}
+                />
+              )}
+
+              {step === 2 && (
+                <ProjectDetailsStep
+                  formData={formData}
+                  onChange={handleFormChange}
+                  onNext={handleNextStep}
+                  onBack={handlePrevStep}
+                />
+              )}
+
+              {step === 3 && (
+                <QualificationStep
+                  formData={formData}
+                  onChange={handleFormChange}
+                  onSubmit={handleSubmit}
+                  onBack={handlePrevStep}
+                  isSubmitting={false}
+                />
               )}
             </>
           )}

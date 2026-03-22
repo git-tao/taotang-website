@@ -3,9 +3,6 @@ import {
   FormData,
   IntakeResponse,
   WizardStep,
-  GateStatus,
-  RoutingResult,
-  AIQuestion,
   initialFormData,
 } from './types';
 import ProgressIndicator from './components/ProgressIndicator';
@@ -13,16 +10,9 @@ import BasicInfoStep from './components/BasicInfoStep';
 import ProjectDetailsStep from './components/ProjectDetailsStep';
 import QualificationStep from './components/QualificationStep';
 import OutcomeScreen from './components/OutcomeScreen';
-import ClarificationFlow from './components/ClarificationFlow';
+import { evaluateGate } from './utils/gateLogic';
 
-// API endpoint
-const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
-
-type WizardState = 'form' | 'submitting' | 'clarifying' | 'success';
-type AnimationState = 'visible' | 'exiting' | 'entering';
-
-// Max questions for the AI clarification flow
-const AI_MAX_QUESTIONS = 3;
+type WizardState = 'form' | 'success';
 
 const IntakeWizard: React.FC = () => {
   const [step, setStep] = useState<WizardStep>(1);
@@ -30,11 +20,6 @@ const IntakeWizard: React.FC = () => {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [result, setResult] = useState<IntakeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  // AI Clarification state
-  const [aiSessionId, setAiSessionId] = useState<string | null>(null);
-  const [firstQuestion, setFirstQuestion] = useState<AIQuestion | null>(null);
-  const [animationState, setAnimationState] = useState<AnimationState>('visible');
 
   const handleFormChange = (updates: Partial<FormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
@@ -48,95 +33,17 @@ const IntakeWizard: React.FC = () => {
     setStep((prev) => Math.max(prev - 1, 1) as WizardStep);
   };
 
-  const handleSubmit = async () => {
-    setWizardState('submitting');
-    setError(null);
+  const handleSubmit = () => {
+    // Evaluate gate client-side — no backend needed
+    const gateResult = evaluateGate(formData);
 
-    try {
-      // Build request payload matching backend schema
-      const payload = {
-        name: formData.name.trim(),
-        email: formData.email.trim().toLowerCase(),
-        role_title: formData.role_title,
-        service_type: formData.service_type,
-        access_model: formData.access_model,
-        timeline: formData.timeline,
-        budget_range: formData.budget_range,
-        context_raw: formData.context_raw.trim(),
-        // Tracking
-        entry_point: 'homepage_wizard',
-        referrer: document.referrer || null,
-        // Extended data in answers_raw (backend will store this)
-        answers_raw: {
-          company_name: formData.company_name || null,
-          is_decision_maker: formData.is_decision_maker,
-          // Conditional follow-ups
-          audit_symptoms: formData.audit_symptoms || null,
-          project_subtype: formData.project_subtype || null,
-          project_state: formData.project_state || null,
-          rag_issues: formData.rag_issues || null,
-          advisory_questions: formData.advisory_questions || null,
-          desired_outcome: formData.desired_outcome || null,
-        },
-      };
-
-      const response = await fetch(`${API_URL}/api/intake`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        // Handle Pydantic validation errors (detail is array) vs simple errors (detail is string)
-        let errorMessage = `Request failed with status ${response.status}`;
-        if (errorData.detail) {
-          if (Array.isArray(errorData.detail)) {
-            // Pydantic validation errors - extract first message
-            errorMessage = errorData.detail[0]?.msg || errorMessage;
-          } else if (typeof errorData.detail === 'string') {
-            errorMessage = errorData.detail;
-          }
-        }
-        throw new Error(errorMessage);
-      }
-
-      const data: IntakeResponse = await response.json();
-
-      // Check if AI clarification is needed
-      if (data.needs_clarification && data.ai_session_id && data.first_question) {
-        // Trigger form exit animation
-        setAnimationState('exiting');
-
-        // After exit animation, switch to clarification mode
-        setTimeout(() => {
-          setAiSessionId(data.ai_session_id!);
-          setFirstQuestion(data.first_question as AIQuestion);
-          setResult(data); // Store provisional result
-          setWizardState('clarifying');
-          setAnimationState('entering');
-
-          // Complete entering animation
-          setTimeout(() => {
-            setAnimationState('visible');
-          }, 300);
-        }, 250);
-      } else {
-        // Normal outcome - show result screen
-        setResult(data);
-        setWizardState('success');
-      }
-    } catch (err) {
-      console.error('Submission error:', err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'An error occurred. Please try again or contact directly.'
-      );
-      setWizardState('form');
-    }
+    setResult({
+      inquiry_id: '',
+      gate_status: gateResult.gate_status,
+      routing_result: gateResult.routing_result,
+      message: '',
+    });
+    setWizardState('success');
   };
 
   const handleReset = () => {
@@ -145,37 +52,6 @@ const IntakeWizard: React.FC = () => {
     setFormData(initialFormData);
     setResult(null);
     setError(null);
-    // Reset AI clarification state
-    setAiSessionId(null);
-    setFirstQuestion(null);
-    setAnimationState('visible');
-  };
-
-  // Handle AI clarification completion
-  const handleClarificationComplete = (finalResult: {
-    gate_status: GateStatus;
-    routing_result: RoutingResult;
-    message: string;
-  }) => {
-    // Update result with final gate status from clarification
-    setResult((prev) => ({
-      ...prev!,
-      gate_status: finalResult.gate_status,
-      routing_result: finalResult.routing_result,
-      message: finalResult.message,
-      needs_clarification: false,
-    }));
-    setWizardState('success');
-  };
-
-  // Handle AI clarification error
-  const handleClarificationError = (errorMessage: string) => {
-    setError(errorMessage);
-    // Return to form state so user can try again
-    setWizardState('form');
-    setAiSessionId(null);
-    setFirstQuestion(null);
-    setAnimationState('visible');
   };
 
   // Success state - show outcome screen
@@ -291,89 +167,43 @@ const IntakeWizard: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column - Form / Clarification */}
+          {/* Right Column - Form */}
           <div className="bg-white p-8 rounded-2xl shadow-xl shadow-gray-200/50 border border-[#E9ECEF] min-h-[500px]">
-            {/* Form Content with Animation */}
-            {wizardState !== 'clarifying' && (
-              <div
-                className={`
-                  transition-all duration-250 ease-out
-                  ${animationState === 'exiting' ? 'opacity-0 scale-[0.98] pointer-events-none' : ''}
-                  ${animationState === 'visible' ? 'opacity-100 scale-100' : ''}
-                `}
-              >
-                <ProgressIndicator currentStep={step} totalSteps={3} />
+            <ProgressIndicator currentStep={step} totalSteps={3} />
 
-                {/* Error Message */}
-                {error && (
-                  <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex items-start gap-3">
-                      <svg
-                        className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <div>
-                        <p className="text-sm font-medium text-red-800">Submission Error</p>
-                        <p className="text-sm text-red-700 mt-1">{error}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step Content */}
-                {step === 1 && (
-                  <BasicInfoStep
-                    formData={formData}
-                    onChange={handleFormChange}
-                    onNext={handleNextStep}
-                  />
-                )}
-
-                {step === 2 && (
-                  <ProjectDetailsStep
-                    formData={formData}
-                    onChange={handleFormChange}
-                    onNext={handleNextStep}
-                    onBack={handlePrevStep}
-                  />
-                )}
-
-                {step === 3 && (
-                  <QualificationStep
-                    formData={formData}
-                    onChange={handleFormChange}
-                    onSubmit={handleSubmit}
-                    onBack={handlePrevStep}
-                    isSubmitting={wizardState === 'submitting'}
-                  />
-                )}
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{error}</p>
               </div>
             )}
 
-            {/* AI Clarification Flow */}
-            {wizardState === 'clarifying' && aiSessionId && firstQuestion && (
-              <div
-                className={`
-                  transition-all duration-300 ease-out
-                  ${animationState === 'entering' ? 'opacity-0 scale-[0.98]' : ''}
-                  ${animationState === 'visible' ? 'opacity-100 scale-100' : ''}
-                `}
-              >
-                <ClarificationFlow
-                  sessionId={aiSessionId}
-                  initialQuestion={firstQuestion}
-                  maxQuestions={AI_MAX_QUESTIONS}
-                  onComplete={handleClarificationComplete}
-                  onError={handleClarificationError}
-                />
-              </div>
+            {/* Step Content */}
+            {step === 1 && (
+              <BasicInfoStep
+                formData={formData}
+                onChange={handleFormChange}
+                onNext={handleNextStep}
+              />
+            )}
+
+            {step === 2 && (
+              <ProjectDetailsStep
+                formData={formData}
+                onChange={handleFormChange}
+                onNext={handleNextStep}
+                onBack={handlePrevStep}
+              />
+            )}
+
+            {step === 3 && (
+              <QualificationStep
+                formData={formData}
+                onChange={handleFormChange}
+                onSubmit={handleSubmit}
+                onBack={handlePrevStep}
+                isSubmitting={false}
+              />
             )}
           </div>
         </div>
