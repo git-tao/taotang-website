@@ -72,8 +72,5 @@ export function getEmailValidationMessage(email: string): string | null {
   if (!isValidEmailFormat(email)) {
     return 'Please enter a valid email address';
   }
-  if (!isBusinessEmail(email)) {
-    return 'Please use your work email for business inquiries';
-  }
   return null;
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FormData, RoleTitle } from '../types';
-import { isValidEmailFormat, isBusinessEmail, getEmailValidationMessage } from '../utils/emailValidation';
+import { isValidEmailFormat, getEmailValidationMessage } from '../utils/emailValidation';
 
 interface BasicInfoStepProps {
   formData: FormData;
@@ -50,7 +50,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
   // Validation
   const emailError = emailTouched ? getEmailValidationMessage(formData.email) : null;
-  const isEmailValid = isValidEmailFormat(formData.email) && isBusinessEmail(formData.email);
+  const isEmailValid = isValidEmailFormat(formData.email);
 
   const canProceed =
     formData.name.trim().length > 0 &&
