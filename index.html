@@ -109,19 +109,23 @@
             background-color: var(--amber);
             color: var(--charcoal);
             font-weight: 600;
+            border: 2px solid var(--amber);
             transition: background-color 0.2s ease,
-                        transform 0.2s ease,
+                        color 0.2s ease,
+                        border-color 0.2s ease,
                         box-shadow 0.2s ease;
         }
 
         .btn-primary:hover {
-            background-color: var(--deep-amber);
-            box-shadow: 0 4px 12px rgba(255, 191, 0, 0.3);
+            background-color: var(--charcoal);
+            color: #FFFFFF;
+            border-color: var(--charcoal);
         }
 
         .btn-primary:active {
-            background-color: var(--dark-amber);
-            box-shadow: none;
+            background-color: #111;
+            color: #FFFFFF;
+            border-color: #111;
         }
 
         /* Credential badge */
