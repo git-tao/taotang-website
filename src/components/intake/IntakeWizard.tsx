@@ -185,7 +185,6 @@ const IntakeWizard: React.FC = () => {
         <OutcomeScreen
           result={result}
           onReset={handleReset}
-          userData={{ name: formData.name, email: formData.email }}
         />
       </section>
     );

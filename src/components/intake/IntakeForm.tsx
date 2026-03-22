@@ -30,7 +30,7 @@ interface FormData {
 }
 
 // Calendly URL - update with your actual Calendly link
-const CALENDLY_URL = 'https://calendly.com/taotang/strategy-call';
+const BOOKING_URL = 'https://calendar.app.google/yochBqeYtLimcXc76';
 
 const IntakeForm: React.FC = () => {
   const [step, setStep] = useState<'form' | 'submitting' | 'success'>('form');
@@ -103,7 +103,7 @@ const IntakeForm: React.FC = () => {
       <section id="initiate" className="section-padding px-6 bg-[#F8F9FA]">
         <div className="max-w-2xl mx-auto">
           {result.routing_result === 'calendly_strategy_free' ? (
-            // Qualified lead - show Calendly
+            // Qualified lead - book a call
             <div className="text-center">
               <div className="mb-8">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -112,61 +112,37 @@ const IntakeForm: React.FC = () => {
                   </svg>
                 </div>
                 <h2 className="text-3xl font-bold text-[#212529] mb-4">You're Qualified</h2>
-                <p className="text-[#6C757D] text-lg mb-2">{result.message}</p>
-                <p className="text-[#212529] font-medium">Book your free 30-minute strategy call below:</p>
+                <p className="text-[#6C757D] text-lg mb-6">{result.message}</p>
               </div>
-              {/* Calendly inline widget */}
-              <div
-                className="calendly-inline-widget rounded-xl overflow-hidden shadow-lg"
-                data-url={`${CALENDLY_URL}?hide_gdpr_banner=1&primary_color=FFBF00`}
-                style={{ minWidth: '320px', height: '630px' }}
-              />
+              <a
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
+              >
+                Book Your Free Strategy Call
+              </a>
             </div>
           ) : result.routing_result === 'paid_advisory' ? (
-            // Paid advisory path
+            // Advisory path - book a call
             <div className="text-center">
               <div className="mb-8">
                 <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-[#FFBF00]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-3xl font-bold text-[#212529] mb-4">Paid Advisory Session</h2>
-                <p className="text-[#6C757D] text-lg mb-6">{result.message}</p>
+                <h2 className="text-3xl font-bold text-[#212529] mb-4">Thank You for Your Inquiry</h2>
+                <p className="text-[#6C757D] text-lg mb-6">I'd recommend scheduling a call to discuss your needs and determine the best path forward.</p>
               </div>
-              <div className="bg-white p-8 rounded-2xl shadow-lg border border-[#E9ECEF]">
-                <h3 className="text-xl font-bold text-[#212529] mb-4">1-Hour Advisory Session</h3>
-                <p className="text-4xl font-bold text-[#212529] mb-2">$400</p>
-                <p className="text-[#6C757D] mb-6">Deep-dive consultation on your AI challenges</p>
-                <ul className="text-left text-[#6C757D] space-y-2 mb-8">
-                  <li className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Personalized analysis of your situation
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Actionable recommendations
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Recording provided after session
-                  </li>
-                </ul>
-                <a
-                  href={`${CALENDLY_URL}?hide_gdpr_banner=1`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all text-center"
-                >
-                  Book & Pay $400
-                </a>
-              </div>
+              <a
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
+              >
+                Book a Call
+              </a>
             </div>
           ) : (
             // Manual review or other paths

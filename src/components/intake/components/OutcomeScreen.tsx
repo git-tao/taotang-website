@@ -1,44 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { IntakeResponse } from '../types';
-
-interface UserData {
-  name: string;
-  email: string;
-}
 
 interface OutcomeScreenProps {
   result: IntakeResponse;
   onReset: () => void;
-  userData?: UserData;
 }
 
-// API URL for backend calls
-const API_URL = import.meta.env.VITE_API_URL || 'https://taotang-api.onrender.com';
+// Google Calendar Appointment Scheduling URL
+const BOOKING_URL = 'https://calendar.app.google/yochBqeYtLimcXc76';
 
-// Calendly URL for free strategy call
-const CALENDLY_FREE_STRATEGY = 'https://calendly.com/hello-compliantphotos/30min';
-
-const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData }) => {
-  // Load Calendly widget script for free strategy call
-  useEffect(() => {
-    if (result.routing_result === 'calendly_strategy_free') {
-      const existingScript = document.querySelector('script[src*="calendly"]');
-      if (!existingScript) {
-        const script = document.createElement('script');
-        script.src = 'https://assets.calendly.com/assets/external/widget.js';
-        script.async = true;
-        document.body.appendChild(script);
-      }
-    }
-  }, [result.routing_result]);
-
+const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset }) => {
   // Render based on routing result
   const renderOutcome = () => {
     switch (result.routing_result) {
       case 'calendly_strategy_free':
-        return <FreeStrategyCallOutcome userData={userData} />;
+        return <FreeStrategyCallOutcome />;
       case 'paid_advisory':
-        return <PaidAdvisoryOutcome userData={userData} result={result} />;
+        return <AdvisoryOutcome />;
       case 'manual':
         return <ManualReviewOutcome />;
       default:
@@ -65,16 +43,7 @@ const OutcomeScreen: React.FC<OutcomeScreenProps> = ({ result, onReset, userData
 /**
  * Outcome: Gate PASS - Free Strategy Call
  */
-const FreeStrategyCallOutcome: React.FC<{ userData?: UserData }> = ({ userData }) => {
-  // Build Calendly URL with prefilled user data
-  const buildCalendlyUrl = () => {
-    const baseUrl = `${CALENDLY_FREE_STRATEGY}?hide_gdpr_banner=1&primary_color=FFBF00`;
-    if (userData?.name && userData?.email) {
-      return `${baseUrl}&name=${encodeURIComponent(userData.name)}&email=${encodeURIComponent(userData.email)}`;
-    }
-    return baseUrl;
-  };
-
+const FreeStrategyCallOutcome: React.FC = () => {
   return (
     <div className="text-center">
       {/* Success Icon */}
@@ -96,7 +65,6 @@ const FreeStrategyCallOutcome: React.FC<{ userData?: UserData }> = ({ userData }
         </div>
       </div>
 
-      {/* Headline & Body (from design doc) */}
       <h2 className="text-2xl font-bold text-[#212529] mb-4">
         Thank You for Your Application
       </h2>
@@ -105,67 +73,23 @@ const FreeStrategyCallOutcome: React.FC<{ userData?: UserData }> = ({ userData }
         30-minute strategy call to discuss your goals in more detail and determine the
         best path forward.
       </p>
-      <p className="text-[#212529] font-medium mb-8">
-        Please use the calendar below to schedule a time that works for you.
-      </p>
 
-      {/* Calendly Embed - with prefilled name and email */}
-      <div
-        className="calendly-inline-widget rounded-xl overflow-hidden shadow-lg border border-[#E9ECEF]"
-        data-url={buildCalendlyUrl()}
-        style={{ minWidth: '320px', height: '630px' }}
-      />
+      <a
+        href={BOOKING_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
+      >
+        Book Your Free Strategy Call
+      </a>
     </div>
   );
 };
 
 /**
- * Outcome: Gate FAIL - Paid Advisory Session
- * Now integrates with Stripe Checkout for payment before booking
+ * Outcome: Gate FAIL - Advisory Session (now free booking)
  */
-const PaidAdvisoryOutcome: React.FC<{ userData?: UserData; result: IntakeResponse }> = ({ userData, result }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleBookAdvisory = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_URL}/api/checkout/advisory`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          inquiry_id: result.inquiry_id,
-          customer_email: userData?.email || '',
-          customer_name: userData?.name || '',
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        // Handle both array (Pydantic) and string error details
-        let errorMessage = 'Failed to create checkout session';
-        if (errorData.detail) {
-          if (Array.isArray(errorData.detail)) {
-            errorMessage = errorData.detail[0]?.msg || errorMessage;
-          } else if (typeof errorData.detail === 'string') {
-            errorMessage = errorData.detail;
-          }
-        }
-        throw new Error(errorMessage);
-      }
-
-      const { checkout_url } = await response.json();
-      window.location.href = checkout_url;
-
-    } catch (err) {
-      console.error('Checkout error:', err);
-      setError('Unable to start checkout. Please try again or contact directly.');
-      setIsLoading(false);
-    }
-  };
-
+const AdvisoryOutcome: React.FC = () => {
   return (
     <div className="text-center">
       {/* Amber Icon */}
@@ -181,92 +105,28 @@ const PaidAdvisoryOutcome: React.FC<{ userData?: UserData; result: IntakeRespons
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2}
-              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
         </div>
       </div>
 
-      {/* Headline & Body */}
       <h2 className="text-2xl font-bold text-[#212529] mb-4">
         Thank You for Your Inquiry
       </h2>
       <p className="text-[#6C757D] mb-8 max-w-md mx-auto">
-        Based on your project details, a dedicated advisory session would be the most
-        effective next step. This paid 1-hour session is designed to provide you with
-        actionable recommendations and a clear path forward.
+        Based on your project details, I'd recommend scheduling a call to discuss
+        your needs and determine the best path forward.
       </p>
 
-      {/* Pricing Card */}
-      <div className="bg-white p-8 rounded-2xl shadow-lg border border-[#E9ECEF] max-w-md mx-auto">
-        <h3 className="text-xl font-bold text-[#212529] mb-2">
-          1-Hour Advisory Session
-        </h3>
-        <p className="text-4xl font-bold text-[#212529] mb-2">$300</p>
-        <p className="text-[#6C757D] mb-6 text-sm">
-          Deep-dive consultation on your AI challenges
-        </p>
-
-        <ul className="text-left text-[#6C757D] space-y-3 mb-8 text-sm">
-          <li className="flex items-start gap-2">
-            <svg
-              className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Personalized analysis of your situation</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <svg
-              className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Actionable recommendations you can implement</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <svg
-              className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Recording provided after session</span>
-          </li>
-        </ul>
-
-        {/* Error display */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
-          </div>
-        )}
-
-        <button
-          onClick={handleBookAdvisory}
-          disabled={isLoading}
-          className="block w-full py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-all text-center shadow-lg shadow-amber-200/40 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Preparing checkout...' : 'Book Your Paid Advisory Session'}
-        </button>
-      </div>
+      <a
+        href={BOOKING_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block px-8 py-4 bg-[#FFBF00] text-[#212529] font-bold rounded-lg hover:bg-[#E6AC00] transition-colors shadow-lg shadow-amber-200/40 text-lg"
+      >
+        Book a Call
+      </a>
     </div>
   );
 };

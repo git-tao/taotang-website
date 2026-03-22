@@ -11,7 +11,7 @@ import CaseStudies from './components/sections/CaseStudies';
 import Process from './components/sections/Process';
 import FinalCTA from './components/sections/FinalCTA';
 import { IntakeWizard } from './components/intake';
-import BookingSuccess from './pages/BookingSuccess';
+
 import NotFound from './pages/NotFound';
 import ScrollToTop from './components/ScrollToTop';
 import IntakeModal from './components/IntakeModal';
@@ -79,7 +79,6 @@ const App: React.FC = () => {
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/booking/success" element={<BookingSuccess />} />
           <Route path="*" element={<NotFoundWrapper />} />
         </Routes>
       </ModalProvider>
